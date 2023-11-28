@@ -4,8 +4,63 @@ from linebot import LineBotApi
 from linebot.models import *
 import datetime
 import json
+from linebot.models import FlexSendMessage
+from linebot.models.flex_message import (
+    BubbleContainer, ImageComponent, BoxComponent
+)
+from linebot.models.actions import URIAction
+from order.models import Order
 
 line_bot_api = LineBotApi(settings.LINE_CHANNEL_ACCESS_TOKEN)
+
+menu = {"M啪噠紅茶": "30", "L啪噠紅茶": "40",
+
+        "M四季烏龍": "35", "L四季烏龍": "45",
+
+        "M啪噠普洱茶": "40", "L啪噠普洱茶": "50",
+
+        "M啪噠焙茶": "40", "L啪噠焙茶": "50",
+
+        "M精靈珍珠黑糖鮮奶茶": "65", "L精靈珍珠黑糖鮮奶茶": "75",
+
+        "M深焙鮮奶茶": "60", "L深焙鮮奶茶": "70",
+
+        "M四季烏龍鮮奶茶": "55", "L四季烏龍鮮奶茶": "65",
+
+        "M香芋鮮奶茶": "65", "L香芋鮮奶茶": "75",
+
+        "M啪噠奶茶": "45", "L啪噠奶茶": "55",
+
+        "M茉香奶綠": "45", "L茉香奶綠": "55",
+
+        "M鐵觀音奶茶": "50", "L鐵觀音奶茶": "60",
+
+        "M香芋奶綠": "55", "L香芋奶綠": "65",
+        }
+menu_e = {"M啪噠紅茶": "40", "L啪噠紅茶": "50",
+
+          "M四季烏龍": "45", "L四季烏龍": "55",
+
+          "M啪噠普洱茶": "50", "L啪噠普洱茶": "60",
+
+          "M啪噠焙茶": "50", "L啪噠焙茶": "60",
+
+          "M精靈珍珠黑糖鮮奶茶": "75", "L精靈珍珠黑糖鮮奶茶": "85",
+
+          "M深焙鮮奶茶": "70", "L深焙鮮奶茶": "80",
+
+          "M四季烏龍鮮奶茶": "65", "L四季烏龍鮮奶茶": "75",
+
+          "M香芋鮮奶茶": "75", "L香芋鮮奶茶": "85",
+
+          "M啪噠奶茶": "55", "L啪噠奶茶": "65",
+
+          "M茉香奶綠": "55", "L茉香奶綠": "65",
+
+          "M鐵觀音奶茶": "60", "L鐵觀音奶茶": "70",
+
+          "M香芋奶綠": "65", "L香芋奶綠": "75",
+          }
 
 
 def sendText(event):
@@ -555,3 +610,2005 @@ def sendBack_cat03(event, backdata):
     except:
         line_bot_api.reply_message(
             event.reply_token, TextSendMessage(text='失敗'))
+
+
+def sendMenu(event):
+    try:
+        message = ImageSendMessage(
+            original_content_url="https://raw.githubusercontent.com/shakuneko/pic0412/main/menu%20(1).jpg",
+            preview_image_url="https://raw.githubusercontent.com/shakuneko/pic0412/main/menu%20(1).jpg"
+        )
+        line_bot_api.reply_message(event.reply_token, message)
+
+    except:
+        line_bot_api.reply_message(
+            event.reply_token, TextSendMessage(text='不'))
+
+
+def sendButton(event):
+    try:
+        # deleteData = order.objects.all()
+        # deleteData.delete()
+
+        message = TemplateSendMessage(
+            alt_text='Buttons template',
+            template=ButtonsTemplate(
+                thumbnail_image_url="https://raw.githubusercontent.com/shakuneko/pic0412/main/%E6%88%91%E8%A6%81%E8%8F%9C%E5%96%AE.JPG",
+                title='Menu',
+                text='請問要哪個種類的飲料',
+                actions=[
+                    PostbackTemplateAction(
+                        label='啪噠原茶',
+                        text='啪噠原茶',
+                        data='action=啪噠原茶'
+                    ),
+                    PostbackTemplateAction(
+                        label='精靈純鮮奶茶',
+                        text='精靈純鮮奶茶',
+                        data='action=精靈純鮮奶茶'
+                    ),
+                    PostbackTemplateAction(
+                        label='啪噠奶茶',
+                        text='啪噠奶茶',
+                        data='action=啪噠奶茶'
+                    )
+
+                ]
+            )
+
+        )
+        line_bot_api.reply_message(event.reply_token, message)
+
+    except:
+        line_bot_api.reply_message(
+            event.reply_token, TextSendMessage(text='不'))
+
+
+def sendback_original(event, backdata):
+    try:
+        flex_message = FlexSendMessage(
+            alt_text='啪噠原茶',
+            contents={
+                "type": "carousel",
+                "contents": [
+                    {
+                        'type': 'bubble',
+                        'direction': 'ltr',
+                        "header": {
+                            "type": "box",
+                            "layout": "vertical",
+                            "contents": [
+                                {
+                                    "type": "text",
+                                    "text": "啪噠紅茶",
+                                    "weight": "bold",
+                                    "margin": "sm",
+                                    "size": "md",
+                                    "wrap": True
+                                }
+                            ]
+                        },
+                        'hero': {
+                            'type': 'image',
+                            'url': 'https://raw.githubusercontent.com/shakuneko/pic0412/main/%E9%A3%B2%E6%96%99/%E5%95%AA%E5%99%A0%E7%B4%85%E8%8C%B6.JPG',
+                            'size': 'full',
+                            'aspectRatio': '1:1',
+                            'aspectMode': 'cover',
+                        },
+                        'body': {
+                            "type": "box",
+                            "layout": "vertical",
+                            "spacing": "sm",
+                            "contents": [
+                                {
+                                    "type": "button",
+                                    "style": "secondary",
+                                    "color": "#F6DCCB",
+                                    "action": {
+                                        'type': 'postback',
+                                        'label': 'M 啪噠紅茶',
+                                        'text': '想喝 M 啪噠紅茶',
+                                        'data': 'A&M啪噠紅茶'
+                                    }
+                                },
+                                {
+                                    "type": "button",
+                                    "style": "secondary",
+                                    "color": "#C4DABB",
+                                    "action": {
+                                        'type': 'postback',
+                                        'label': 'L 啪噠紅茶',
+                                        'text': '想喝 L 啪噠紅茶',
+                                        'data': 'A&L啪噠紅茶'
+                                    }
+                                },
+                            ]
+                        }
+                    },
+                    {
+                        'type': 'bubble',
+                        'direction': 'ltr',
+                        "header": {
+                            "type": "box",
+                            "layout": "vertical",
+                            "contents": [
+                                {
+                                    "type": "text",
+                                    "text": "四季烏龍",
+                                    "weight": "bold",
+                                    "margin": "sm",
+                                    "size": "md",
+                                    "wrap": True
+                                }
+                            ]
+                        },
+                        'hero': {
+                            'type': 'image',
+                            'url': 'https://raw.githubusercontent.com/shakuneko/pic0412/main/%E9%A3%B2%E6%96%99/%E5%9B%9B%E5%AD%A3%E7%83%8F%E9%BE%8D.JPG',
+                            'size': 'full',
+                            'aspectRatio': '1:1',
+                            'aspectMode': 'cover',
+                        },
+                        'body': {
+                            "type": "box",
+                            "layout": "vertical",
+                            "spacing": "sm",
+                            "contents": [
+                                {
+                                    "type": "button",
+                                    "style": "secondary",
+                                    "color": "#F6DCCB",
+                                    "action": {
+                                        'type': 'postback',
+                                        'label': 'M 四季烏龍',
+                                        'text': '想喝 M 四季烏龍',
+                                        'data': 'A&M四季烏龍'
+                                    }
+                                },
+                                {
+                                    "type": "button",
+                                    "style": "secondary",
+                                    "color": "#C4DABB",
+                                    "action": {
+                                        'type': 'postback',
+                                        'label': 'L 四季烏龍',
+                                        'text': '想喝 L 四季烏龍',
+                                        'data': 'A&L四季烏龍'
+                                    }
+                                },
+                            ]
+                        }
+                    },
+                    {
+                        'type': 'bubble',
+                        'direction': 'ltr',
+                        "header": {
+                            "type": "box",
+                            "layout": "vertical",
+                            "contents": [
+                                {
+                                    "type": "text",
+                                    "text": "啪噠普洱茶",
+                                    "weight": "bold",
+                                    "margin": "sm",
+                                    "size": "md",
+                                    "wrap": True
+                                }
+                            ]
+                        },
+                        'hero': {
+                            'type': 'image',
+                            'url': 'https://raw.githubusercontent.com/shakuneko/pic0412/main/%E9%A3%B2%E6%96%99/%E5%95%AA%E5%99%A0%E6%99%AE%E6%B4%B1%E8%8C%B6.JPG',
+                            'size': 'full',
+                            'aspectRatio': '1:1',
+                            'aspectMode': 'cover',
+                        },
+                        'body': {
+                            "type": "box",
+                            "layout": "vertical",
+                            "spacing": "sm",
+                            "contents": [
+                                {
+                                    "type": "button",
+                                    "style": "secondary",
+                                    "color": "#F6DCCB",
+                                    "action": {
+                                        'type': 'postback',
+                                        'label': 'M 啪噠普洱茶',
+                                        'text': '想喝 M 啪噠普洱茶',
+                                        'data': 'A&M啪噠普洱茶'
+                                    }
+                                },
+                                {
+                                    "type": "button",
+                                    "style": "secondary",
+                                    "color": "#C4DABB",
+                                    "action": {
+                                        'type': 'postback',
+                                        'label': 'L 啪噠普洱茶',
+                                        'text': '想喝 L 啪噠普洱茶',
+                                        'data': 'A&L啪噠普洱茶'
+                                    }
+                                },
+                            ]
+                        }
+                    },
+                    {
+                        'type': 'bubble',
+                        'direction': 'ltr',
+                        "header": {
+                            "type": "box",
+                            "layout": "vertical",
+                            "contents": [
+                                {
+                                    "type": "text",
+                                    "text": "啪噠焙茶",
+                                    "weight": "bold",
+                                    "margin": "sm",
+                                    "size": "md",
+                                    "wrap": True
+                                }
+                            ]
+                        },
+                        'hero': {
+                            'type': 'image',
+                            'url': 'https://raw.githubusercontent.com/shakuneko/pic0412/main/%E9%A3%B2%E6%96%99/%E5%95%AA%E5%99%A0%E7%84%99%E8%8C%B6.JPG',
+                            'size': 'full',
+                            'aspectRatio': '1:1',
+                            'aspectMode': 'cover',
+                        },
+                        'body': {
+                            "type": "box",
+                            "layout": "vertical",
+                            "spacing": "sm",
+                            "contents": [
+                                {
+                                    "type": "button",
+                                    "style": "secondary",
+                                    "color": "#F6DCCB",
+                                    "action": {
+                                        'type': 'postback',
+                                        'label': 'M 啪噠焙茶',
+                                        'text': '想喝 M 啪噠焙茶',
+                                        'data': 'A&M啪噠焙茶'
+                                    }
+                                },
+                                {
+                                    "type": "button",
+                                    "style": "secondary",
+                                    "color": "#C4DABB",
+                                    "action": {
+                                        'type': 'postback',
+                                        'label': 'L 啪噠焙茶',
+                                        'text': '想喝 L 啪噠焙茶',
+                                        'data': 'A&L啪噠焙茶'
+                                    }
+                                },
+                            ]
+                        }
+                    },
+                ]
+            }
+        )
+
+        line_bot_api.reply_message(event.reply_token, flex_message)
+
+    except:
+        line_bot_api.reply_message(
+            event.reply_token, TextSendMessage(text='不'))
+
+
+def sendback_pure(event, backdata):
+    try:
+        flex_message = FlexSendMessage(
+            alt_text='精靈純鮮奶茶',
+            contents={
+                "type": "carousel",
+                "contents": [
+                    {
+                        'type': 'bubble',
+                        'direction': 'ltr',
+                        "header": {
+                            "type": "box",
+                            "layout": "vertical",
+                            "contents": [
+                                {
+                                    "type": "text",
+                                    "text": "精靈珍珠黑糖鮮奶茶",
+                                    "weight": "bold",
+                                    "margin": "sm",
+                                    "size": "md",
+                                    "wrap": True
+                                }
+                            ]
+                        },
+                        'hero': {
+                            'type': 'image',
+                            'url': 'https://raw.githubusercontent.com/shakuneko/pic0412/main/%E9%A3%B2%E6%96%99/%E5%95%AA%E5%99%A0%E7%B4%85%E8%8C%B6.JPG',
+                            'size': 'full',
+                            'aspectRatio': '1:1',
+                            'aspectMode': 'cover',
+
+                        },
+                        'body': {
+                            "type": "box",
+                            "layout": "vertical",
+                            "spacing": "sm",
+                            "contents": [
+                                {
+                                    "type": "button",
+                                    "style": "secondary",
+                                    "color": "#F6DCCB",
+                                    "action": {
+                                        'type': 'postback',
+                                        'label': 'M 精靈珍珠黑糖鮮奶茶',
+                                        'text': '想喝 M 精靈珍珠黑糖鮮奶茶',
+                                        'data': 'A&M精靈珍珠黑糖鮮奶茶'
+                                    }
+                                },
+                                {
+                                    "type": "button",
+                                    "style": "secondary",
+                                    "color": "#C4DABB",
+                                    "action": {
+                                        'type': 'postback',
+                                        'label': 'L 精靈珍珠黑糖鮮奶茶',
+                                        'text': '想喝 L 精靈珍珠黑糖鮮奶茶',
+                                        'data': 'A&L精靈珍珠黑糖鮮奶茶'
+                                    }
+                                },
+                            ]
+                        }
+                    },
+                    {
+                        'type': 'bubble',
+                        'direction': 'ltr',
+                        "header": {
+                            "type": "box",
+                            "layout": "vertical",
+                            "contents": [
+                                {
+                                    "type": "text",
+                                    "text": "深焙鮮奶茶",
+                                    "weight": "bold",
+                                    "margin": "sm",
+                                    "size": "md",
+                                    "wrap": True
+                                }
+                            ]
+                        },
+                        'hero': {
+                            'type': 'image',
+                            'url': 'https://raw.githubusercontent.com/shakuneko/pic0412/main/%E9%A3%B2%E6%96%99/%E5%9B%9B%E5%AD%A3%E7%83%8F%E9%BE%8D.JPG',
+                            'size': 'full',
+                            'aspectRatio': '1:1',
+                            'aspectMode': 'cover',
+                        },
+                        'body': {
+                            "type": "box",
+                            "layout": "vertical",
+                            "spacing": "sm",
+                            "contents": [
+                                {
+                                    "type": "button",
+                                    "style": "secondary",
+                                    "color": "#F6DCCB",
+                                    "action": {
+                                        'type': 'postback',
+                                        'label': 'M 深焙鮮奶茶',
+                                        'text': '想喝 M 深焙鮮奶茶',
+                                        'data': 'A&M深焙鮮奶茶'
+                                    }
+                                },
+                                {
+                                    "type": "button",
+                                    "style": "secondary",
+                                    "color": "#C4DABB",
+                                    "action": {
+                                        'type': 'postback',
+                                        'label': 'L 深焙鮮奶茶',
+                                        'text': '想喝 L 深焙鮮奶茶',
+                                        'data': 'A&L深焙鮮奶茶'
+                                    }
+                                },
+                            ]
+                        }
+                    },
+                    {
+                        'type': 'bubble',
+                        'direction': 'ltr',
+                        "header": {
+                            "type": "box",
+                            "layout": "vertical",
+                            "contents": [
+                                {
+                                    "type": "text",
+                                    "text": "四季烏龍鮮奶茶",
+                                    "weight": "bold",
+                                    "margin": "sm",
+                                    "size": "md",
+                                    "wrap": True
+                                }
+                            ]
+                        },
+                        'hero': {
+                            'type': 'image',
+                            'url': 'https://raw.githubusercontent.com/shakuneko/pic0412/main/%E9%A3%B2%E6%96%99/%E5%95%AA%E5%99%A0%E6%99%AE%E6%B4%B1%E8%8C%B6.JPG',
+                            'size': 'full',
+                            'aspectRatio': '1:1',
+                            'aspectMode': 'cover',
+                        },
+                        'body': {
+                            "type": "box",
+                            "layout": "vertical",
+                            "spacing": "sm",
+                            "contents": [
+                                {
+                                    "type": "button",
+                                    "style": "secondary",
+                                    "color": "#F6DCCB",
+                                    "action": {
+                                        'type': 'postback',
+                                        'label': 'M 四季烏龍鮮奶茶',
+                                        'text': '想喝 M 四季烏龍鮮奶茶',
+                                        'data': 'A&M四季烏龍鮮奶茶'
+                                    }
+                                },
+                                {
+                                    "type": "button",
+                                    "style": "secondary",
+                                    "color": "#C4DABB",
+                                    "action": {
+                                        'type': 'postback',
+                                        'label': 'L 四季烏龍鮮奶茶',
+                                        'text': '想喝 L 四季烏龍鮮奶茶',
+                                        'data': 'A&L四季烏龍鮮奶茶'
+                                    }
+                                },
+                            ]
+                        }
+                    },
+                    {
+                        'type': 'bubble',
+                        'direction': 'ltr',
+                        "header": {
+                            "type": "box",
+                            "layout": "vertical",
+                            "contents": [
+                                {
+                                    "type": "text",
+                                    "text": "香芋鮮奶茶",
+                                    "weight": "bold",
+                                    "margin": "sm",
+                                    "size": "md",
+                                    "wrap": True
+                                }
+                            ]
+                        },
+                        'hero': {
+                            'type': 'image',
+                            'url': 'https://raw.githubusercontent.com/shakuneko/pic0412/main/%E9%A3%B2%E6%96%99/%E5%95%AA%E5%99%A0%E7%84%99%E8%8C%B6.JPG',
+                            'size': 'full',
+                            'aspectRatio': '1:1',
+                            'aspectMode': 'cover',
+                        },
+                        'body': {
+                            "type": "box",
+                            "layout": "vertical",
+                            "spacing": "sm",
+                            "contents": [
+                                {
+                                    "type": "button",
+                                    "style": "secondary",
+                                    "color": "#F6DCCB",
+                                    "action": {
+                                        'type': 'postback',
+                                        'label': 'M 香芋鮮奶茶',
+                                        'text': '想喝 M 香芋鮮奶茶',
+                                        'data': 'A&M香芋鮮奶茶'
+                                    }
+                                },
+                                {
+                                    "type": "button",
+                                    "style": "secondary",
+                                    "color": "#C4DABB",
+                                    "action": {
+                                        'type': 'postback',
+                                        'label': 'L 香芋鮮奶茶',
+                                        'text': '想喝 L 香芋鮮奶茶',
+                                        'data': 'A&L香芋鮮奶茶'
+                                    }
+                                },
+                            ]
+                        }
+                    },
+                ]
+            }
+        )
+
+        line_bot_api.reply_message(event.reply_token, flex_message)
+
+    except:
+        line_bot_api.reply_message(
+            event.reply_token, TextSendMessage(text='不'))
+
+
+def sendback_milktea(event, backdata):
+    try:
+        flex_message = FlexSendMessage(
+            alt_text='啪噠奶茶',
+            contents={
+                "type": "carousel",
+                "contents": [
+                    {
+                        'type': 'bubble',
+                        'direction': 'ltr',
+                        "header": {
+                            "type": "box",
+                            "layout": "vertical",
+                            "contents": [
+                                {
+                                    "type": "text",
+                                    "text": "啪噠奶茶",
+                                    "weight": "bold",
+                                    "margin": "sm",
+                                    "size": "md",
+                                    "wrap": True
+                                }
+                            ]
+                        },
+                        'hero': {
+                            'type': 'image',
+                            'url': 'https://raw.githubusercontent.com/shakuneko/pic0412/main/%E9%A3%B2%E6%96%99/%E5%95%AA%E5%99%A0%E7%B4%85%E8%8C%B6.JPG',
+                            'size': 'full',
+                            'aspectRatio': '1:1',
+                            'aspectMode': 'cover',
+
+                        },
+                        'body': {
+                            "type": "box",
+                            "layout": "vertical",
+                            "spacing": "sm",
+                            "contents": [
+                                {
+                                    "type": "button",
+                                    "style": "secondary",
+                                    "color": "#F6DCCB",
+                                    "action": {
+                                        'type': 'postback',
+                                        'label': 'M 啪噠奶茶',
+                                        'text': '想喝 M 啪噠奶茶',
+                                        'data': 'A&M啪噠奶茶'
+                                    }
+                                },
+                                {
+                                    "type": "button",
+                                    "style": "secondary",
+                                    "color": "#C4DABB",
+                                    "action": {
+                                        'type': 'postback',
+                                        'label': 'L 啪噠奶茶',
+                                        'text': '想喝 L 啪噠奶茶',
+                                        'data': 'A&L啪噠奶茶'
+                                    }
+                                },
+                            ]
+                        }
+                    },
+                    {
+                        'type': 'bubble',
+                        'direction': 'ltr',
+                        "header": {
+                            "type": "box",
+                            "layout": "vertical",
+                            "contents": [
+                                {
+                                    "type": "text",
+                                    "text": "茉香奶綠",
+                                    "weight": "bold",
+                                    "margin": "sm",
+                                    "size": "md",
+                                    "wrap": True
+                                }
+                            ]
+                        },
+                        'hero': {
+                            'type': 'image',
+                            'url': 'https://raw.githubusercontent.com/shakuneko/pic0412/main/%E9%A3%B2%E6%96%99/%E5%9B%9B%E5%AD%A3%E7%83%8F%E9%BE%8D.JPG',
+                            'size': 'full',
+                            'aspectRatio': '1:1',
+                            'aspectMode': 'cover',
+                        },
+                        'body': {
+                            "type": "box",
+                            "layout": "vertical",
+                            "spacing": "sm",
+                            "contents": [
+                                {
+                                    "type": "button",
+                                    "style": "secondary",
+                                    "color": "#F6DCCB",
+                                    "action": {
+                                        'type': 'postback',
+                                        'label': 'M 茉香奶綠',
+                                        'text': '想喝 M 茉香奶綠',
+                                        'data': 'A&M茉香奶綠'
+                                    }
+                                },
+                                {
+                                    "type": "button",
+                                    "style": "secondary",
+                                    "color": "#C4DABB",
+                                    "action": {
+                                        'type': 'postback',
+                                        'label': 'L 茉香奶綠',
+                                        'text': '想喝 L 茉香奶綠',
+                                        'data': 'A&L茉香奶綠'
+                                    }
+                                },
+                            ]
+                        }
+                    },
+                    {
+                        'type': 'bubble',
+                        'direction': 'ltr',
+                        "header": {
+                            "type": "box",
+                            "layout": "vertical",
+                            "contents": [
+                                {
+                                    "type": "text",
+                                    "text": "鐵觀音奶茶",
+                                    "weight": "bold",
+                                    "margin": "sm",
+                                    "size": "md",
+                                    "wrap": True
+                                }
+                            ]
+                        },
+                        'hero': {
+                            'type': 'image',
+                            'url': 'https://raw.githubusercontent.com/shakuneko/pic0412/main/%E9%A3%B2%E6%96%99/%E5%95%AA%E5%99%A0%E6%99%AE%E6%B4%B1%E8%8C%B6.JPG',
+                            'size': 'full',
+                            'aspectRatio': '1:1',
+                            'aspectMode': 'cover',
+                        },
+                        'body': {
+                            "type": "box",
+                            "layout": "vertical",
+                            "spacing": "sm",
+                            "contents": [
+                                {
+                                    "type": "button",
+                                    "style": "secondary",
+                                    "color": "#F6DCCB",
+                                    "action": {
+                                        'type': 'postback',
+                                        'label': 'M 鐵觀音奶茶',
+                                        'text': '想喝 M 鐵觀音奶茶',
+                                        'data': 'A&M鐵觀音奶茶'
+                                    }
+                                },
+                                {
+                                    "type": "button",
+                                    "style": "secondary",
+                                    "color": "#C4DABB",
+                                    "action": {
+                                        'type': 'postback',
+                                        'label': 'L 鐵觀音奶茶',
+                                        'text': '想喝 L 鐵觀音奶茶',
+                                        'data': 'A&L鐵觀音奶茶'
+                                    }
+                                },
+                            ]
+                        }
+                    },
+                    {
+                        'type': 'bubble',
+                        'direction': 'ltr',
+                        "header": {
+                            "type": "box",
+                            "layout": "vertical",
+                            "contents": [
+                                {
+                                    "type": "text",
+                                    "text": "香芋奶綠",
+                                    "weight": "bold",
+                                    "margin": "sm",
+                                    "size": "md",
+                                    "wrap": True
+                                }
+                            ]
+                        },
+                        'hero': {
+                            'type': 'image',
+                            'url': 'https://raw.githubusercontent.com/shakuneko/pic0412/main/%E9%A3%B2%E6%96%99/%E5%95%AA%E5%99%A0%E7%84%99%E8%8C%B6.JPG',
+                            'size': 'full',
+                            'aspectRatio': '1:1',
+                            'aspectMode': 'cover',
+                        },
+                        'body': {
+                            "type": "box",
+                            "layout": "vertical",
+                            "spacing": "sm",
+                            "contents": [
+                                {
+                                    "type": "button",
+                                    "style": "secondary",
+                                    "color": "#F6DCCB",
+                                    "action": {
+                                        'type': 'postback',
+                                        'label': 'M 香芋奶綠',
+                                        'text': '想喝 M 香芋奶綠',
+                                        'data': 'A&M香芋奶綠'
+                                    }
+                                },
+                                {
+                                    "type": "button",
+                                    "style": "secondary",
+                                    "color": "#C4DABB",
+                                    "action": {
+                                        'type': 'postback',
+                                        'label': 'L 香芋奶綠',
+                                        'text': '想喝 L 香芋奶綠',
+                                        'data': 'A&L香芋奶綠'
+                                    }
+                                },
+                            ]
+                        }
+                    },
+                ]
+            }
+        )
+
+        line_bot_api.reply_message(event.reply_token, flex_message)
+
+    except:
+        line_bot_api.reply_message(
+            event.reply_token, TextSendMessage(text='不'))
+
+
+def sendback_ice(event, backdata, ice):
+    try:
+        bubble = BubbleContainer(
+            direction='ltr',
+            body=BoxComponent(
+                layout='horizontal',
+                spacing='xs',
+                contents=[
+                    ImageComponent(
+                        url="https://raw.githubusercontent.com/shakuneko/pic0412/main/%E5%86%B0%E5%A1%8A%E7%94%9C%E5%BA%A6/%E5%B8%B8%E6%BA%AB-03.jpg",
+                        size="lg",
+                        aspect_mode="cover",
+                        action=PostbackTemplateAction(
+                            label='常溫',
+                            text='想要 常溫',
+                            data='B&' + ice + '&常溫'
+                        )
+                    ),
+                    ImageComponent(
+                        url="https://raw.githubusercontent.com/shakuneko/pic0412/main/%E5%86%B0%E5%A1%8A%E7%94%9C%E5%BA%A6/%E5%8E%BB%E5%86%B0-03.jpg",
+                        size="lg",
+                        aspect_mode="cover",
+                        action=PostbackTemplateAction(
+                            label='去冰',
+                            text='想要 去冰',
+                            data='B&' + ice + '&去冰'
+                        )
+                    ),
+                    ImageComponent(
+                        url="https://raw.githubusercontent.com/shakuneko/pic0412/main/%E5%86%B0%E5%A1%8A%E7%94%9C%E5%BA%A6/%E5%BE%AE%E5%86%B0-03.jpg",
+                        size="lg",
+                        aspect_mode="cover",
+                        action=PostbackTemplateAction(
+                            label='微冰',
+                            text='想要 微冰',
+                            data='B&' + ice + '&微冰'
+                        )
+                    ),
+                    ImageComponent(
+                        url="https://raw.githubusercontent.com/shakuneko/pic0412/main/%E5%86%B0%E5%A1%8A%E7%94%9C%E5%BA%A6/%E5%B0%91%E5%86%B0-03.jpg",
+                        size="lg",
+                        aspect_mode="cover",
+                        action=PostbackTemplateAction(
+                            label='少冰',
+                            text='想要 少冰',
+                            data='B&' + ice + '&少冰'
+                        )
+                    ),
+                    ImageComponent(
+                        url="https://raw.githubusercontent.com/shakuneko/pic0412/main/%E5%86%B0%E5%A1%8A%E7%94%9C%E5%BA%A6/%E6%AD%A3%E5%B8%B8-03.jpg",
+                        size="lg",
+                        aspect_mode="cover",
+                        action=PostbackTemplateAction(
+                            label='正常',
+                            text='想要 正常',
+                            data='B&' + ice + '&正常'
+                        )
+                    ),
+                ]
+            )
+        )
+
+        message = FlexSendMessage(alt_text="冰塊", contents=bubble)
+        line_bot_api.reply_message(event.reply_token, message)
+
+    except:
+        line_bot_api.reply_message(
+            event.reply_token, TextSendMessage(text='ice no'))
+
+
+def sendback_suger(event, backdata, suger):
+    try:
+        bubble = BubbleContainer(
+            direction='ltr',
+            body=BoxComponent(
+                layout='horizontal',
+                spacing='xs',
+                contents=[
+                    ImageComponent(
+                        url="https://raw.githubusercontent.com/shakuneko/pic0412/main/%E5%86%B0%E5%A1%8A%E7%94%9C%E5%BA%A6/%E7%84%A1%E7%B3%96-03.jpg",
+                        size="lg",
+                        aspect_mode="cover",
+                        action=PostbackTemplateAction(
+                            label='無糖',
+                            text='想要 無糖',
+                            data='C&' + suger + '&無糖'
+                        )
+                    ),
+                    ImageComponent(
+                        url="https://raw.githubusercontent.com/shakuneko/pic0412/main/%E5%86%B0%E5%A1%8A%E7%94%9C%E5%BA%A6/%E5%BE%AE%E7%B3%96-03.jpg",
+                        size="lg",
+                        aspect_mode="cover",
+                        action=PostbackTemplateAction(
+                            label='微糖',
+                            text='想要 微糖',
+                            data='C&' + suger + '&微糖'
+                        )
+                    ),
+                    ImageComponent(
+                        url="https://raw.githubusercontent.com/shakuneko/pic0412/main/%E5%86%B0%E5%A1%8A%E7%94%9C%E5%BA%A6/%E5%8D%8A%E7%B3%96-03.jpg",
+                        size="lg",
+                        aspect_mode="cover",
+                        action=PostbackTemplateAction(
+                            label='半糖',
+                            text='想要 半糖',
+                            data='C&' + suger + '&半糖'
+                        )
+                    ),
+                    ImageComponent(
+                        url="https://raw.githubusercontent.com/shakuneko/pic0412/main/%E5%86%B0%E5%A1%8A%E7%94%9C%E5%BA%A6/%E5%B0%91%E7%B3%96-03.jpg",
+                        size="lg",
+                        aspect_mode="cover",
+                        action=PostbackTemplateAction(
+                            label='少糖',
+                            text='想要 少糖',
+                            data='C&' + suger + '&少糖'
+                        )
+                    ),
+                    ImageComponent(
+                        url="https://raw.githubusercontent.com/shakuneko/pic0412/main/%E5%86%B0%E5%A1%8A%E7%94%9C%E5%BA%A6/%E5%85%A8%E7%B3%96-03.jpg",
+                        size="lg",
+                        aspect_mode="cover",
+                        action=PostbackTemplateAction(
+                            label='全糖',
+                            text='想要 全糖',
+                            data='C&' + suger + '&全糖'
+                        )
+                    ),
+                ]
+            )
+        )
+
+        message = FlexSendMessage(alt_text="糖度", contents=bubble)
+        line_bot_api.reply_message(event.reply_token, message)
+
+    except:
+        line_bot_api.reply_message(
+            event.reply_token, TextSendMessage(text='suger no'))
+
+
+def sendback_add(event, backdata, add):
+    try:
+        bubble = BubbleContainer(
+            direction='ltr',
+            header=BoxComponent(
+                layout='vertical',
+                background_color='#DBD3D8',
+                contents=[
+                    TextComponent(
+                        text="加料 +10，只能選一種!",
+                        size="md",
+                        weight="bold",
+                        margin="sm"
+                    )
+                ]
+            ),
+            body=BoxComponent(
+                layout='vertical',
+                margin="sm",
+                contents=[
+                    BoxComponent(
+                        layout='horizontal',
+                        spacing='xs',
+                        contents=[
+                            ImageComponent(
+                                url="https://raw.githubusercontent.com/shakuneko/pic0412/main/%E9%85%8D%E6%96%99/%E9%BB%91%E7%B3%96%E7%8F%8D%E7%8F%A0.JPG",
+                                size="lg",
+                                aspect_mode="cover",
+                                action=PostbackTemplateAction(
+                                    label='黑糖珍珠',
+                                    text='想要 黑糖珍珠',
+                                    data='D&' + add + '&黑糖珍珠'
+                                )
+                            ),
+                            ImageComponent(
+                                url="https://raw.githubusercontent.com/shakuneko/pic0412/main/%E9%85%8D%E6%96%99/%E6%A4%B0%E6%9E%9C.JPG",
+                                size="lg",
+                                aspect_mode="cover",
+                                action=PostbackTemplateAction(
+                                    label='椰果',
+                                    text='想要 椰果',
+                                    data='D&' + add + '&椰果'
+                                )
+                            ),
+                            ImageComponent(
+                                url="https://raw.githubusercontent.com/shakuneko/pic0412/main/%E9%85%8D%E6%96%99/%E5%B0%8F%E8%8A%8B%E5%9C%93.JPG",
+                                size="lg",
+                                aspect_mode="cover",
+                                action=PostbackTemplateAction(
+                                    label='小芋圓',
+                                    text='想要 小芋圓',
+                                    data='D&' + add + '&小芋圓'
+                                )
+                            ),
+                        ]
+                    ),
+                    BoxComponent(
+                        layout='horizontal',
+                        spacing='xs',
+                        contents=[
+                            ImageComponent(
+                                url="https://raw.githubusercontent.com/shakuneko/pic0412/main/%E9%85%8D%E6%96%99/%E8%9C%82%E8%9C%9C%E7%99%BD%E7%8E%89.JPG",
+                                size="lg",
+                                aspect_mode="cover",
+                                action=PostbackTemplateAction(
+                                    label='蜂蜜白玉',
+                                    text='想要 蜂蜜白玉',
+                                    data='D&' + add + '&蜂蜜白玉'
+                                )
+                            ),
+                            ImageComponent(
+                                url="https://raw.githubusercontent.com/shakuneko/pic0412/main/%E9%85%8D%E6%96%99/%E4%BB%99%E8%8D%89.JPG",
+                                size="lg",
+                                aspect_mode="cover",
+                                action=PostbackTemplateAction(
+                                    label='仙草',
+                                    text='想要 仙草',
+                                    data='D&' + add + '&仙草'
+                                )
+                            ),
+                            ImageComponent(
+                                url="https://raw.githubusercontent.com/shakuneko/pic0412/main/%E9%85%8D%E6%96%99/%E5%B8%83%E4%B8%81.JPG",
+                                size="lg",
+                                aspect_mode="cover",
+                                action=PostbackTemplateAction(
+                                    label='布丁',
+                                    text='想要 布丁',
+                                    data='D&' + add + '&布丁'
+                                )
+                            ),
+                        ]
+                    ),
+                ]
+            ),
+            footer=BoxComponent(
+                layout='horizontal',
+                spacing='xs',
+                contents=[
+                    ButtonComponent(
+                        style='secondary',
+                        color="#C4DABB",
+                        action=PostbackTemplateAction(
+                            label='不用加料',
+                            text='想要 不用加料',
+                            data='D&' + add + '&不用加料'
+                        )
+                    )
+                ]
+            )
+
+        )
+
+        message = FlexSendMessage(alt_text="加料嗎", contents=bubble)
+        line_bot_api.reply_message(event.reply_token, message)
+
+    except:
+        line_bot_api.reply_message(
+            event.reply_token, TextSendMessage(text='不add'))
+
+
+def sendback_num(event, backdata, num):
+    try:
+        message = TextSendMessage(
+            text='請問要幾份',
+            quick_reply=QuickReply(items=[
+                QuickReplyButton(action=PostbackTemplateAction(
+                    label="1", text="1份", data='E&' + num + '&1')),
+                QuickReplyButton(action=PostbackTemplateAction(
+                    label="2", text="2份", data='E&' + num + '&2')),
+                QuickReplyButton(action=PostbackTemplateAction(
+                    label="3", text="3份", data='E&' + num + '&3')),
+                QuickReplyButton(action=PostbackTemplateAction(
+                    label="4", text="4份", data='E&' + num + '&4')),
+                QuickReplyButton(action=PostbackTemplateAction(
+                    label="5", text="5份", data='E&' + num + '&5')),
+                QuickReplyButton(action=PostbackTemplateAction(
+                    label="6", text="6份", data='E&' + num + '&6')),
+                QuickReplyButton(action=PostbackTemplateAction(
+                    label="7", text="7份", data='E&' + num + '&7')),
+                QuickReplyButton(action=PostbackTemplateAction(
+                    label="8", text="8份", data='E&' + num + '&8')),
+                QuickReplyButton(action=PostbackTemplateAction(
+                    label="9", text="9份", data='E&' + num + '&9')),
+
+            ]))
+
+        line_bot_api.reply_message(event.reply_token, message)
+    except:
+        line_bot_api.reply_message(
+            event.reply_token, TextSendMessage(text='不買'))
+
+
+def sendback_confirm(event, backdata, result, nn):  # 點完加料
+    try:
+        drink = result[0]
+        ice = result[1]
+        suger = result[2]
+        add = result[3]
+        amount = result[4]
+        uid = nn
+
+        if add == "不用加料":
+            price = menu[drink]
+        else:
+            price = menu_e[drink]
+
+        # 將資料新增到資料庫
+        unit = Order.objects.create(
+            drink=drink, ice=ice, suger=suger, add=add, price=price, amount=amount, uid=uid)
+        unit.save()
+
+        bubble = BubbleContainer(
+            direction='ltr',
+            header=BoxComponent(
+                layout='vertical',
+                # background_color='#DBD3D8',
+                contents=[
+                    TextComponent(
+                        text="已加入： " + amount + " 杯 " + drink,
+                        size="md",
+                        weight="bold",
+                    ),
+                    SeparatorComponent(
+                        color="#C8BCC3",
+                        margin="xxl"
+                    ),
+                ]
+            ),
+            body=BoxComponent(
+                layout='vertical',
+                contents=[
+                    TextComponent(
+                        text="\n冰塊：" + ice
+                    ),
+                    TextComponent(
+                        text="\n糖度：" + suger
+                    ),
+                    TextComponent(
+                        text="\n加料：" + add
+                    ),
+                    TextComponent(
+                        text=" 加料 + 10 元喔!",
+                        color="#C8BCC3",
+                        size="xs",
+                        margin='xs'
+                    ),
+                    TextComponent(
+                        text="\n一杯單價：" + price
+                    ),
+                    TextComponent(
+                        text="\n"
+                    ),
+                    TextComponent(
+                        text="\n請問要結束購買嗎",
+                        weight="bold",
+                    ),
+                ]
+            ),
+            footer=BoxComponent(
+                layout='vertical',
+                spacing='xs',
+                contents=[
+                    BoxComponent(
+                        layout='horizontal',
+                        spacing='xs',
+                        contents=[
+                            ButtonComponent(
+                                style='secondary',
+                                color="#E8F1E4",
+                                action=PostbackTemplateAction(
+                                    label='修改此筆訂單',
+                                    text='修改此筆訂單',
+                                    data='H'
+                                )
+                            ),
+                            ButtonComponent(
+                                style='secondary',
+                                color="#C4DABB",
+                                action=PostbackTemplateAction(
+                                    label='繼續購物',
+                                    text='繼續購物',
+                                    data='G'
+                                )
+                            )
+                        ]
+                    ),
+                    ButtonComponent(
+                        style='secondary',
+                        color="#F6DCCB",
+                        action=PostbackTemplateAction(
+                            label='結帳',
+                            text='結帳',
+                            data='F'
+                        )
+                    )
+                ]
+            )
+        )
+
+        message = FlexSendMessage(alt_text="確認訂單", contents=bubble)
+        line_bot_api.reply_message(event.reply_token, message)
+    except:
+        line_bot_api.reply_message(
+            event.reply_token, TextSendMessage(text='不'))
+
+
+def sendButton_Again(event):
+    try:
+        message = TemplateSendMessage(
+            alt_text='Buttons template',
+            template=ButtonsTemplate(
+                thumbnail_image_url="https://raw.githubusercontent.com/shakuneko/pic0412/main/%E6%88%91%E8%A6%81%E8%8F%9C%E5%96%AE.JPG",
+                title='Menu',
+                text='請問要哪個種類的飲料',
+                actions=[
+                    PostbackTemplateAction(
+                        label='啪噠原茶',
+                        text='啪噠原茶',
+                        data='action=啪噠原茶'
+                    ),
+                    PostbackTemplateAction(
+                        label='精靈純鮮奶茶',
+                        text='精靈純鮮奶茶',
+                        data='action=精靈純鮮奶茶'
+                    ),
+                    PostbackTemplateAction(
+                        label='啪噠奶茶',
+                        text='啪噠奶茶',
+                        data='action=啪噠奶茶'
+                    )
+                ]
+            )
+        )
+        line_bot_api.reply_message(event.reply_token, message)
+    except:
+        line_bot_api.reply_message(
+            event.reply_token, TextSendMessage(text='不'))
+
+
+def sendRECEIPT(event):
+    try:
+        messageA = []
+        orders = Order.objects.order_by('id')
+
+        total = 0
+
+        for order in orders:
+            text1 = ""
+            drinkA = ""
+            iceA = ""
+            sugerA = ""
+            addA = ""
+            priceA = ""
+            amountA = ""
+
+            tt = ""
+
+            drink = order.drink
+            ice = order.ice
+            suger = order.suger
+            add = order.add
+            amount = order.amount
+            price = order.price
+
+            m = int(amount)
+
+            # 將同項目資料做整理
+            text1 += "\n"
+            drinkA += "\n" + drink
+            iceA += "\n" + ice
+            sugerA += "\n" + suger
+            addA += "\n" + add
+            amountA += "\n" + str(amount)
+            priceA += "\n$" + str(price)
+
+            tt += f"\n{drink}：{ice}，{suger}，{add}"
+            total += int(price) * int(amount)
+
+            bubble = BubbleContainer(
+                direction='ltr',
+                header=BoxComponent(
+                    layout='vertical',
+                    contents=[
+                        TextComponent(
+                            text="結帳 RECEIPT",
+                            color="#CCAE8F",
+                            size="md",
+                            weight="bold",
+                        ),
+                        TextComponent(
+                            text="啪噠啪噠河馬",
+                            size="35px",
+                            weight="bold",
+                            wrap=True,
+                            margin="md"
+                        ),
+                        TextComponent(
+                            text="河馬調製的茶飲能讓您開心一整天!",
+                            size="xs",
+                            weight="bold",
+                            color="#C8BCC3",
+                        ),
+                        SeparatorComponent(
+                            color="#C8BCC3",
+                            margin="xxl"
+                        ),
+                        BoxComponent(
+                            layout="vertical",
+                            margin="xxl",
+                            spacing="sm",
+                            contents=[
+                                BoxComponent(
+                                    layout="horizontal",
+                                    contents=[
+                                        TextComponent(
+                                            text='飲料',
+                                            color="#4B8F8C",
+                                            flex=4,
+                                            size="sm",
+                                            wrap=True
+                                        ),
+                                        TextComponent(
+                                            text='杯',
+                                            color="#4B8F8C",
+                                            align="end",
+                                            size="sm",
+                                            wrap=True
+                                        ),
+                                        TextComponent(
+                                            text='單價',
+                                            color="#4B8F8C",
+                                            align="end",
+                                            size="sm",
+                                            wrap=True
+                                        ),
+                                    ]
+                                ),
+                                BoxComponent(
+                                    layout="horizontal",
+                                    contents=[
+                                        TextComponent(
+                                            text=drinkA,
+                                            color="#555555",
+                                            flex=4,
+                                            wrap=True
+                                        ),
+                                        TextComponent(
+                                            text=amountA,
+                                            color="#111111",
+                                            align="end",
+                                            wrap=True
+                                        ),
+                                        TextComponent(
+                                            text=priceA,
+                                            color="#C171BD",
+                                            align="end",
+                                            wrap=True
+                                        ),
+                                    ]
+                                )
+                            ]
+                        ),
+                        SeparatorComponent(
+                            color="#C8BCC3",
+                            margin="xxl"
+                        ),
+                        BoxComponent(
+                            layout="vertical",
+                            margin="xxl",
+                            spacing="sm",
+                            contents=[
+                                BoxComponent(
+                                    layout="horizontal",
+                                    contents=[
+                                        TextComponent(
+                                            text='詳細飲料清單',
+                                            color="#4B8F8C",
+                                            size="sm",
+                                            wrap=True
+                                        ),
+                                    ]
+                                ),
+                                BoxComponent(
+                                    layout="horizontal",
+                                    contents=[
+                                        TextComponent(
+                                            text=tt,
+                                            color="#555555",
+                                            flex=0,
+                                            wrap=True
+                                        ),
+                                    ]
+                                )
+                            ]
+                        ),
+                        SeparatorComponent(
+                            color="#C8BCC3",
+                            margin="xxl"
+                        ),
+                        BoxComponent(
+                            layout="vertical",
+                            margin="xxl",
+                            spacing="sm",
+                            contents=[
+                                BoxComponent(
+                                    layout="horizontal",
+                                    contents=[
+                                        TextComponent(
+                                            text="飲料總杯數",
+                                            color="#555555",
+                                            flex=0,
+                                            wrap=True
+                                        ),
+                                        TextComponent(
+                                            text=str(m),
+                                            color="#111111",
+                                            align="end",
+                                            wrap=True
+                                        ),
+                                    ]
+                                ),
+                                BoxComponent(
+                                    layout="horizontal",
+                                    margin="xl",
+                                    contents=[
+                                        TextComponent(
+                                            text="總價",
+                                            color="#C171BD",
+                                            flex=0,
+                                            size="xl",
+                                            wrap=True
+                                        ),
+                                        TextComponent(
+                                            text="$" + str(total),
+                                            color="#C171BD",
+                                            align="end",
+                                            size="xl",
+                                            wrap=True
+                                        ),
+                                    ]
+                                )
+                            ]
+                        ),
+                    ]
+                ),
+            )
+
+            messageA.append(FlexSendMessage(alt_text="結帳", contents=bubble))
+        messageA.append(TextSendMessage(text="我們會盡快幫您準備飲料，請您稍等片刻~"))
+        line_bot_api.reply_message(event.reply_token, messageA)
+    except:
+        line_bot_api.reply_message(
+            event.reply_token, TextSendMessage(text='結帳錯誤'))
+
+
+def sendback_which(event, backdata):
+    try:
+        bubble = BubbleContainer(
+            direction='ltr',
+            header=BoxComponent(
+                layout='vertical',
+                background_color='#DBD3D8',
+                contents=[
+                    TextComponent(
+                        text="請問要修改此訂單的哪個項",
+                        size="md",
+                        weight="bold",
+                    ),
+                ]
+            ),
+            body=BoxComponent(
+                layout='vertical',
+                spacing='xs',
+                contents=[
+
+                    ButtonComponent(
+                        style='secondary',
+                        color="#E8F1E4",
+                        action=PostbackTemplateAction(
+                            label='飲料品項',
+                            text='要修改飲料品項',
+                            data='M1&'
+                        )
+                    ),
+                    ButtonComponent(
+                        style='secondary',
+                        color="#E8F1E4",
+                        action=PostbackTemplateAction(
+                            label='數量',
+                            text='要修改數量',
+                            data='M2&'
+                        )
+                    ),
+                    ButtonComponent(
+                        style='secondary',
+                        color="#E8F1E4",
+                        action=PostbackTemplateAction(
+                            label='糖度',
+                            text='要修改糖度',
+                            data='M3&'
+                        )
+                    ),
+                    ButtonComponent(
+                        style='secondary',
+                        color="#E8F1E4",
+                        action=PostbackTemplateAction(
+                            label='冰塊',
+                            text='要修改冰塊',
+                            data='M4&'
+                        )
+                    ),
+                    ButtonComponent(
+                        style='secondary',
+                        color="#E8F1E4",
+                        action=PostbackTemplateAction(
+                            label='加料',
+                            text='要修改加料',
+                            data='M5&'
+                        )
+                    ),
+                ]
+            ),
+        )
+
+        message = FlexSendMessage(alt_text="修改哪項訂單", contents=bubble)
+        line_bot_api.reply_message(event.reply_token, message)
+    except:
+        line_bot_api.reply_message(
+            event.reply_token, TextSendMessage(text='不'))
+
+
+def sendModifyButton(event, backdata):
+    try:
+        message = TemplateSendMessage(
+            alt_text='Buttons template',
+            template=ButtonsTemplate(
+                thumbnail_image_url="https://raw.githubusercontent.com/shakuneko/pic0412/main/%E6%88%91%E8%A6%81%E8%8F%9C%E5%96%AE.JPG",
+                title='Menu',
+                text='請問要哪個種類的飲料',
+                actions=[
+                    PostbackTemplateAction(
+                        label='啪噠原茶',
+                        text='啪噠原茶',
+                        data='action=M啪噠原茶'
+                    ),
+                    PostbackTemplateAction(
+                        label='精靈純鮮奶茶',
+                        text='精靈純鮮奶茶',
+                        data='action=M精靈純鮮奶茶'
+                    ),
+                    PostbackTemplateAction(
+                        label='啪噠奶茶',
+                        text='啪噠奶茶',
+                        data='action=M啪噠奶茶'
+                    )
+                ]
+            )
+        )
+        line_bot_api.reply_message(event.reply_token, message)
+
+    except:
+        line_bot_api.reply_message(
+            event.reply_token, TextSendMessage(text='不'))
+
+
+def sendback_Modifyoriginal(event, backdata):
+    try:
+        flex_message = FlexSendMessage(
+            alt_text='啪噠原茶',
+            contents={
+                "type": "carousel",
+
+                "contents": [
+                    {
+                        'type': 'bubble',
+                        'direction': 'ltr',
+                        "header": {
+                            "type": "box",
+                            "layout": "vertical",
+                            "backgroundColor": "#DBD3D8",
+                            "contents": [
+                                {
+                                    "type": "text",
+                                    "text": "啪噠紅茶",
+                                    "weight": "bold",
+                                    "margin": "sm",
+                                    "size": "md",
+                                    "wrap": True
+                                }
+                            ]
+                        },
+                        'hero': {
+                            'type': 'image',
+                            'url': 'https://raw.githubusercontent.com/shakuneko/pic0412/main/%E9%A3%B2%E6%96%99/%E5%95%AA%E5%99%A0%E7%B4%85%E8%8C%B6.JPG',
+                            'size': 'full',
+                            'aspectRatio': '1:1',
+                            'aspectMode': 'cover',
+
+                        },
+                        'body': {
+                            "type": "box",
+                            "layout": "vertical",
+                            "spacing": "sm",
+                            "contents": [
+                                {
+                                    "type": "button",
+                                    "style": "secondary",
+                                    "color": "#F6DCCB",
+                                    "action": {
+                                        'type': 'postback',
+                                        'label': 'M 啪噠紅茶',
+                                        'text': '改成 M啪噠紅茶',
+                                        'data': 'do'
+                                    }
+                                },
+                                {
+                                    "type": "button",
+                                    "style": "secondary",
+                                    "color": "#C4DABB",
+                                    "action": {
+                                        'type': 'postback',
+                                        'label': 'L 啪噠紅茶',
+                                        'text': '改成 L啪噠紅茶',
+                                        'data': 'do'
+                                    }
+                                },
+                            ]
+                        }
+                    },
+                    {
+                        'type': 'bubble',
+                        'direction': 'ltr',
+                        "header": {
+                            "type": "box",
+                            "backgroundColor": "#DBD3D8",
+                            "layout": "vertical",
+                            "contents": [
+                                {
+                                    "type": "text",
+                                    "text": "四季烏龍",
+                                    # "color":"#9A8492",
+                                    "weight": "bold",
+                                    "margin": "sm",
+                                    "size": "md",
+                                    "wrap": True
+                                }
+                            ]
+                        },
+                        'hero': {
+                            'type': 'image',
+                            'url': 'https://raw.githubusercontent.com/shakuneko/pic0412/main/%E9%A3%B2%E6%96%99/%E5%9B%9B%E5%AD%A3%E7%83%8F%E9%BE%8D.JPG',
+                            'size': 'full',
+                            'aspectRatio': '1:1',
+                            'aspectMode': 'cover',
+
+                        },
+                        'body': {
+                            "type": "box",
+                            "layout": "vertical",
+                            "spacing": "sm",
+                            "contents": [
+                                {
+                                    "type": "button",
+                                    "style": "secondary",
+                                    "color": "#F6DCCB",
+                                    "action": {
+                                        'type': 'postback',
+                                        'label': 'M 四季烏龍',
+                                        'text': '改成 M四季烏龍',
+                                        'data': 'do'
+                                    }
+                                },
+                                {
+                                    "type": "button",
+                                    "style": "secondary",
+                                    "color": "#C4DABB",
+                                    "action": {
+                                        'type': 'postback',
+                                        'label': 'L 四季烏龍',
+                                        'text': '改成 L四季烏龍',
+                                        'data': 'do'
+                                    }
+                                },
+                            ]
+                        }
+                    },
+                    {
+                        'type': 'bubble',
+                        'direction': 'ltr',
+                        "header": {
+                            "type": "box",
+                            "backgroundColor": "#DBD3D8",
+                            "layout": "vertical",
+                            "contents": [
+                                {
+                                    "type": "text",
+                                    "text": "啪噠普洱茶",
+                                    # "color":"#9A8492",
+                                    "weight": "bold",
+                                    "margin": "sm",
+                                    "size": "md",
+                                    "wrap": True
+                                }
+                            ]
+                        },
+                        'hero': {
+                            'type': 'image',
+                            'url': 'https://raw.githubusercontent.com/shakuneko/pic0412/main/%E9%A3%B2%E6%96%99/%E5%95%AA%E5%99%A0%E6%99%AE%E6%B4%B1%E8%8C%B6.JPG',
+                            'size': 'full',
+                            'aspectRatio': '1:1',
+                            'aspectMode': 'cover',
+
+                        },
+                        'body': {
+                            "type": "box",
+                            "layout": "vertical",
+                            "spacing": "sm",
+                            "contents": [
+                                {
+                                    "type": "button",
+                                    "style": "secondary",
+                                    "color": "#F6DCCB",
+                                    "action": {
+                                        'type': 'postback',
+                                        'label': 'M 啪噠普洱茶',
+                                        'text': '改成 M啪噠普洱茶',
+                                        'data': 'do'
+                                    }
+                                },
+                                {
+                                    "type": "button",
+                                    "style": "secondary",
+                                    "color": "#C4DABB",
+                                    "action": {
+                                        'type': 'postback',
+                                        'label': 'L 啪噠普洱茶',
+                                        'text': '改成 L啪噠普洱茶',
+                                        'data': 'do'
+                                    }
+                                },
+                            ]
+                        }
+                    },
+                    {
+                        'type': 'bubble',
+                        'direction': 'ltr',
+                        "header": {
+                            "backgroundColor": "#DBD3D8",
+                            "type": "box",
+                            "layout": "vertical",
+                            "contents": [
+                                {
+                                    "type": "text",
+                                    "text": "啪噠焙茶",
+                                    # "color":"#9A8492",
+                                    "weight": "bold",
+                                    "margin": "sm",
+                                    "size": "md",
+                                    "wrap": True
+                                }
+                            ]
+                        },
+                        'hero': {
+                            'type': 'image',
+                            'url': 'https://raw.githubusercontent.com/shakuneko/pic0412/main/%E9%A3%B2%E6%96%99/%E5%95%AA%E5%99%A0%E7%84%99%E8%8C%B6.JPG',
+                            'size': 'full',
+                            'aspectRatio': '1:1',
+                            'aspectMode': 'cover',
+
+                        },
+                        'body': {
+                            "type": "box",
+                            "layout": "vertical",
+                            "spacing": "sm",
+                            "contents": [
+                                {
+                                    "type": "button",
+                                    "style": "secondary",
+                                    "color": "#F6DCCB",
+                                    "action": {
+                                        'type': 'postback',
+                                        'label': 'M 啪噠焙茶',
+                                        'text': '改成 M啪噠焙茶',
+                                        'data': 'do'
+                                    }
+                                },
+                                {
+                                    "type": "button",
+                                    "style": "secondary",
+                                    "color": "#C4DABB",
+                                    "action": {
+                                        'type': 'postback',
+                                        'label': 'L 啪噠焙茶',
+                                        'text': '改成 L啪噠焙茶',
+                                        'data': 'do'
+                                    }
+                                },
+                            ]
+                        }
+                    },
+                ]
+            }
+        )
+
+        line_bot_api.reply_message(event.reply_token, flex_message)
+
+    except:
+        line_bot_api.reply_message(
+            event.reply_token, TextSendMessage(text='修改啪噠原茶失敗'))
+
+
+def sendback_Modifypure(event, backdata):
+    try:
+        flex_message = FlexSendMessage(
+            alt_text='精靈純鮮奶茶',
+            contents={
+                "type": "carousel",
+                "contents": [
+                    {
+                        'type': 'bubble',
+                        'direction': 'ltr',
+                        "header": {
+                            "type": "box",
+                            "layout": "vertical",
+                            "contents": [
+                                {
+                                    "type": "text",
+                                    "text": "精靈珍珠黑糖鮮奶茶",
+                                    "weight": "bold",
+                                    "margin": "sm",
+                                    "size": "md",
+                                    "wrap": True
+                                }
+                            ]
+                        },
+                        'hero': {
+                            'type': 'image',
+                            'url': 'https://raw.githubusercontent.com/shakuneko/pic0412/main/%E9%A3%B2%E6%96%99/%E5%95%AA%E5%99%A0%E7%B4%85%E8%8C%B6.JPG',
+                            'size': 'full',
+                            'aspectRatio': '1:1',
+                            'aspectMode': 'cover',
+
+                        },
+                        'body': {
+                            "type": "box",
+                            "layout": "vertical",
+                            "spacing": "sm",
+                            "contents": [
+                                {
+                                    "type": "button",
+                                    "style": "secondary",
+                                    "color": "#F6DCCB",
+                                    "action": {
+                                        'type': 'postback',
+                                        'label': 'M 精靈珍珠黑糖鮮奶茶',
+                                        'text': '改成 M 精靈珍珠黑糖鮮奶茶',
+                                        'data': 'do'
+                                    }
+                                },
+                                {
+                                    "type": "button",
+                                    "style": "secondary",
+                                    "color": "#C4DABB",
+                                    "action": {
+                                        'type': 'postback',
+                                        'label': 'L 精靈珍珠黑糖鮮奶茶',
+                                        'text': '改成 L 精靈珍珠黑糖鮮奶茶',
+                                        'data': 'do'
+                                    }
+                                },
+                            ]
+                        }
+                    },
+                    {
+                        'type': 'bubble',
+                        'direction': 'ltr',
+                        "header": {
+                            "type": "box",
+                            "layout": "vertical",
+                            "contents": [
+                                {
+                                    "type": "text",
+                                    "text": "深焙鮮奶茶",
+                                    "weight": "bold",
+                                    "margin": "sm",
+                                    "size": "md",
+                                    "wrap": True
+                                }
+                            ]
+                        },
+                        'hero': {
+                            'type': 'image',
+                            'url': 'https://raw.githubusercontent.com/shakuneko/pic0412/main/%E9%A3%B2%E6%96%99/%E5%9B%9B%E5%AD%A3%E7%83%8F%E9%BE%8D.JPG',
+                            'size': 'full',
+                            'aspectRatio': '1:1',
+                            'aspectMode': 'cover',
+                        },
+                        'body': {
+                            "type": "box",
+                            "layout": "vertical",
+                            "spacing": "sm",
+                            "contents": [
+                                {
+                                    "type": "button",
+                                    "style": "secondary",
+                                    "color": "#F6DCCB",
+                                    "action": {
+                                        'type': 'postback',
+                                        'label': 'M 深焙鮮奶茶',
+                                        'text': '改成 M 深焙鮮奶茶',
+                                        'data': 'do'
+                                    }
+                                },
+                                {
+                                    "type": "button",
+                                    "style": "secondary",
+                                    "color": "#C4DABB",
+                                    "action": {
+                                        'type': 'postback',
+                                        'label': 'L 深焙鮮奶茶',
+                                        'text': '改成 L 深焙鮮奶茶',
+                                        'data': 'do'
+                                    }
+                                },
+                            ]
+                        }
+                    },
+                    {
+                        'type': 'bubble',
+                        'direction': 'ltr',
+                        "header": {
+                            "type": "box",
+                            "layout": "vertical",
+                            "contents": [
+                                {
+                                    "type": "text",
+                                    "text": "四季烏龍鮮奶茶",
+                                    "weight": "bold",
+                                    "margin": "sm",
+                                    "size": "md",
+                                    "wrap": True
+                                }
+                            ]
+                        },
+                        'hero': {
+                            'type': 'image',
+                            'url': 'https://raw.githubusercontent.com/shakuneko/pic0412/main/%E9%A3%B2%E6%96%99/%E5%95%AA%E5%99%A0%E6%99%AE%E6%B4%B1%E8%8C%B6.JPG',
+                            'size': 'full',
+                            'aspectRatio': '1:1',
+                            'aspectMode': 'cover',
+                        },
+                        'body': {
+                            "type": "box",
+                            "layout": "vertical",
+                            "spacing": "sm",
+                            "contents": [
+                                {
+                                    "type": "button",
+                                    "style": "secondary",
+                                    "color": "#F6DCCB",
+                                    "action": {
+                                        'type': 'postback',
+                                        'label': 'M 四季烏龍鮮奶茶',
+                                        'text': '改成 M 四季烏龍鮮奶茶',
+                                        'data': 'do'
+                                    }
+                                },
+                                {
+                                    "type": "button",
+                                    "style": "secondary",
+                                    "color": "#C4DABB",
+                                    "action": {
+                                        'type': 'postback',
+                                        'label': 'L 四季烏龍鮮奶茶',
+                                        'text': '改成 L 四季烏龍鮮奶茶',
+                                        'data': 'do'
+                                    }
+                                },
+                            ]
+                        }
+                    },
+                    {
+                        'type': 'bubble',
+                        'direction': 'ltr',
+                        "header": {
+                            "type": "box",
+                            "layout": "vertical",
+                            "contents": [
+                                {
+                                    "type": "text",
+                                    "text": "香芋鮮奶茶",
+                                    "weight": "bold",
+                                    "margin": "sm",
+                                    "size": "md",
+                                    "wrap": True
+                                }
+                            ]
+                        },
+                        'hero': {
+                            'type': 'image',
+                            'url': 'https://raw.githubusercontent.com/shakuneko/pic0412/main/%E9%A3%B2%E6%96%99/%E5%95%AA%E5%99%A0%E7%84%99%E8%8C%B6.JPG',
+                            'size': 'full',
+                            'aspectRatio': '1:1',
+                            'aspectMode': 'cover',
+                        },
+                        'body': {
+                            "type": "box",
+                            "layout": "vertical",
+                            "spacing": "sm",
+                            "contents": [
+                                {
+                                    "type": "button",
+                                    "style": "secondary",
+                                    "color": "#F6DCCB",
+                                    "action": {
+                                        'type': 'postback',
+                                        'label': 'M 香芋鮮奶茶',
+                                        'text': '改成 M 香芋鮮奶茶',
+                                        'data': 'do'
+                                    }
+                                },
+                                {
+                                    "type": "button",
+                                    "style": "secondary",
+                                    "color": "#C4DABB",
+                                    "action": {
+                                        'type': 'postback',
+                                        'label': 'L 香芋鮮奶茶',
+                                        'text': '改成 L 香芋鮮奶茶',
+                                        'data': 'do'
+                                    }
+                                },
+                            ]
+                        }
+                    },
+                ]
+            }
+        )
+
+        line_bot_api.reply_message(event.reply_token, flex_message)
+
+    except:
+        line_bot_api.reply_message(
+            event.reply_token, TextSendMessage(text='不'))

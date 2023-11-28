@@ -18,7 +18,8 @@ from django.contrib import admin
 from django.urls import path
 from django.urls import include, re_path
 # from firstapp import views
-from postback import views
+# from postback import views
+from order import views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
