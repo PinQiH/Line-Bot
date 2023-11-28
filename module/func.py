@@ -475,3 +475,83 @@ def sendFlexMessage(event):
     except:
         line_bot_api.reply_message(
             event.reply_token, TextSendMessage(text='發生錯誤!'))
+
+
+def sendIntro(event):
+    try:
+        message = TemplateSendMessage(
+            alt_text='Buttons template',
+            template=ButtonsTemplate(
+                thumbnail_image_url="https://images.pexels.com/photos/160755/kittens-cats-foster-playing-160755.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
+                title='成員介紹',
+                text='請選擇',
+                actions=[
+                    PostbackTemplateAction(
+                        label='第一隻喵',
+                        text='第一隻喵',
+                        data='action=第一隻喵'
+                    ),
+                    PostbackTemplateAction(
+                        label='第二隻喵',
+                        text='第二隻喵',
+                        data='action=第二隻喵'
+                    ),
+                    PostbackTemplateAction(
+                        label='第三隻喵',
+                        text='第三隻喵',
+                        data='action=第三隻喵'
+                    )
+                ]
+            )
+
+        )
+        line_bot_api.reply_message(event.reply_token, message)
+
+    except:
+        line_bot_api.reply_message(
+            event.reply_token, TextSendMessage(text='失敗'))
+
+
+def sendBack_cat01(event, backdata):
+    try:
+        message_A = []
+        message_A.append(TextSendMessage(text="我是喵仔"))
+        message_A.append(ImageSendMessage(
+            original_content_url="https://images.pexels.com/photos/104827/cat-pet-animal-domestic-104827.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1.png",
+            preview_image_url="https://images.pexels.com/photos/104827/cat-pet-animal-domestic-104827.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1.png"
+        ))
+        line_bot_api.reply_message(event.reply_token, message_A)
+
+    except:
+        line_bot_api.reply_message(
+            event.reply_token, TextSendMessage(text='失敗'))
+
+
+def sendBack_cat02(event, backdata):
+    try:
+        message_A = []
+        message_A.append(TextSendMessage(text="我是毛毛"))
+        message_A.append(ImageSendMessage(
+            original_content_url="https://images.pexels.com/photos/257532/pexels-photo-257532.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
+            preview_image_url="https://images.pexels.com/photos/257532/pexels-photo-257532.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"
+        ))
+        line_bot_api.reply_message(event.reply_token, message_A)
+
+    except:
+        line_bot_api.reply_message(
+            event.reply_token, TextSendMessage(text='失敗'))
+
+
+def sendBack_cat03(event, backdata):
+    try:
+        message_A = []
+        message_A.append(TextSendMessage(text="我是嚕嚕"))
+        message_A.append(ImageSendMessage(
+            original_content_url="https://images.pexels.com/photos/1404819/pexels-photo-1404819.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
+            preview_image_url="https://images.pexels.com/photos/1404819/pexels-photo-1404819.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"
+        ))
+        line_bot_api.reply_message(event.reply_token, message_A)
+
+    except:
+        line_bot_api.reply_message(
+            event.reply_token, TextSendMessage(text='失敗'))
