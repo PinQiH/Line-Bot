@@ -16,10 +16,15 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from django.urls import re_path
+from django.urls import include, re_path
 from firstapp import views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    re_path(r'^callback$', views.callback)
+    re_path(r'^callback$', views.callback),
+    re_path(r'^listone/$', views.listone),
+    re_path(r'^listall/$', views.listall),
+    re_path(r'^insert/$', views.insert),  # 新增資料
+    re_path(r'^modify/$', views.modify),  # 修改資料
+    re_path(r'^delete/$', views.delete),  # 刪除資料
 ]

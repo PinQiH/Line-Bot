@@ -8,6 +8,10 @@ from linebot.models import MessageEvent, TextMessage, PostbackEvent, TextSendMes
 from module import func
 from urllib.parse import parse_qsl
 
+from firstapp.models import student
+from django.shortcuts import render
+
+
 line_bot_api = LineBotApi(settings.LINE_CHANNEL_ACCESS_TOKEN)
 parser = WebhookParser(settings.LINE_CHANNEL_SECRET)
 
@@ -90,3 +94,47 @@ def callback(request):
 
     else:
         return HttpResponseBadRequest()
+
+
+def listone(request):
+    try:
+        unit = student.objects.get(cName="黃品綺")  # 讀取一筆資料
+    except:
+        errormessage = " (讀取錯誤!)"
+    return render(request, "listone.html", locals())
+
+
+def listall(request):
+    students = student.objects.all().order_by('id')
+    return render(request, "listall.html", locals())
+
+
+def insert(request):  # 新增資料
+    cName = '林三和'
+    cSex = 'M'
+    cBirthday = '1987-12-26'
+    cEmail = 'miwamail@gmail.com'
+    cPhone = '0963245612'
+    cAddr = '新北市蘆洲區中正路243巷19號'
+    unit = student.objects.create(
+        cName=cName, cSex=cSex, cBirthday=cBirthday, cEmail=cEmail, cPhone=cPhone, cAddr=cAddr)
+    unit.save()  # 寫入資料庫
+    students = student.objects.all().order_by('-id')
+    return render(request, "listall.html", locals())
+
+
+def modify(request):  # 修改資料
+    unit = student.objects.get(cName='aa')
+    unit.cName = '林和'
+    unit.cBirthday = '1987-12-11'
+    unit.cAddr = '新北市蘆洲區中正路185巷63號'
+    unit.save()  # 寫入資料庫
+    students = student.objects.all().order_by('-id')
+    return render(request, "listall.html", locals())
+
+
+def delete(request, id=None):  # 刪除資料
+    unit = student.objects.get(id=4)
+    unit.delete()
+    students = student.objects.all().order_by('-id')
+    return render(request, "listall.html", locals())

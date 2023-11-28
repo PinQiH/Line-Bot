@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>學生資料</title>
+</head>
+
+<body>
+
+    <h1>學生資料</h1>
+
+    {% if errormessage %}
+    <p>{{ errormessage }}</p>
+    {% else %}
+    <p>姓名：{{ unit.cName }}</p>
+    <p>性別：{{ unit.cSex }}</p>
+    <p>生日：{{ unit.cBirthday }}</p>
+    <p>Email：{{ unit.cEmail }}</p>
+    <p>電話：{{ unit.cPhone }}</p>
+    <p>地址：{{ unit.cAddr }}</p>
+    {% endif %}
+
+</body>
+
+</html>
