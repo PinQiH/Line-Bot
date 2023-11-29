@@ -35,14 +35,19 @@ def callback(request):
         for event in events:
             if isinstance(event, MessageEvent):  # 如果有訊息事件
                 mtext = event.message.text
+                nn = event.source.user_id  # 儲存使用者 ID
                 if mtext == "我要菜單":
                     func.sendMenu(event)
                 elif mtext == "我要點餐":
                     func.sendButton(event)
+                elif mtext[:2] == "改成":
+                    stuff = mtext[3:]  # 拿取修改哪項項目的名稱，EX：飲料
+                    func.sendback_modifyConfirm(event, stuff, nn)
             if isinstance(event, PostbackEvent):
                 backdata = dict(parse_qsl(event.postback.data))
                 result = event.postback.data[2:].split('&')
                 nn = event.source.user_id  # 儲存使用者 ID
+
                 if backdata.get('action') == '啪噠原茶':
                     func.sendback_original(event, backdata)
 
@@ -68,14 +73,15 @@ def callback(request):
                     num = event.postback.data[2:]
                     func.sendback_num(event, backdata, num)
 
-                elif event.postback.data[0:1] == "E":  # 確認當前輸入的訂單
+                # 確認當前輸入的訂單
+                elif event.postback.data[0:1] == "E":
                     func.sendback_confirm(event, backdata, result, nn)
 
                 elif event.postback.data[0:1] == "G":  # 繼續購物
                     func.sendButton_Again(event)
 
                 elif event.postback.data[0:1] == "F":  # 結帳
-                    func.sendRECEIPT(event)
+                    func.sendRECEIPT(event, nn)
 
                 elif event.postback.data[0:1] == "H":  # 修改哪一項訂單
                     func.sendback_which(event, backdata)
@@ -91,6 +97,18 @@ def callback(request):
 
                 elif backdata.get('action') == 'M啪噠奶茶':
                     func.sendback_Modifymilktea(event, backdata)
+
+                elif event.postback.data[0:2] == "M2":  # 修改數量
+                    func.sendback_Modifynum(event, backdata)
+
+                elif event.postback.data[0:2] == "M3":  # 修改糖度
+                    func.sendback_Modifysuger(event, backdata)
+
+                elif event.postback.data[0:2] == "M4":  # 修改冰塊
+                    func.sendback_Modifyice(event, backdata)
+
+                elif event.postback.data[0:2] == "M5":  # 修改加料
+                    func.sendback_Modifyadd(event, backdata)
         return HttpResponse()
     else:
         return HttpResponseBadRequest()

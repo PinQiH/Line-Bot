@@ -61,6 +61,10 @@ menu_e = {"M啪噠紅茶": "40", "L啪噠紅茶": "50",
 
           "M香芋奶綠": "65", "L香芋奶綠": "75",
           }
+iceMenu = ['正常', '少冰', '微冰', '去冰', '常溫']
+sugerMenu = ['全糖', '少糖', '半糖', '微糖', '無糖']
+amountMenu = ['1', '2', '3', '4', '5', '6', '7', '8', '9']
+addMenu = ['黑糖珍珠', '蜂蜜白玉', '仙草', '小芋園', '椰果', '布丁', '不用加料']
 
 
 def sendText(event):
@@ -619,8 +623,8 @@ def sendMenu(event):
             preview_image_url="https://raw.githubusercontent.com/shakuneko/pic0412/main/menu%20(1).jpg"
         )
         line_bot_api.reply_message(event.reply_token, message)
-
-    except:
+    except Exception as e:
+        print(e)
         line_bot_api.reply_message(
             event.reply_token, TextSendMessage(text='不'))
 
@@ -658,8 +662,8 @@ def sendButton(event):
 
         )
         line_bot_api.reply_message(event.reply_token, message)
-
-    except:
+    except Exception as e:
+        print(e)
         line_bot_api.reply_message(
             event.reply_token, TextSendMessage(text='不'))
 
@@ -892,8 +896,8 @@ def sendback_original(event, backdata):
         )
 
         line_bot_api.reply_message(event.reply_token, flex_message)
-
-    except:
+    except Exception as e:
+        print(e)
         line_bot_api.reply_message(
             event.reply_token, TextSendMessage(text='不'))
 
@@ -1127,8 +1131,8 @@ def sendback_pure(event, backdata):
         )
 
         line_bot_api.reply_message(event.reply_token, flex_message)
-
-    except:
+    except Exception as e:
+        print(e)
         line_bot_api.reply_message(
             event.reply_token, TextSendMessage(text='不'))
 
@@ -1362,8 +1366,8 @@ def sendback_milktea(event, backdata):
         )
 
         line_bot_api.reply_message(event.reply_token, flex_message)
-
-    except:
+    except Exception as e:
+        print(e)
         line_bot_api.reply_message(
             event.reply_token, TextSendMessage(text='不'))
 
@@ -1432,8 +1436,8 @@ def sendback_ice(event, backdata, ice):
 
         message = FlexSendMessage(alt_text="冰塊", contents=bubble)
         line_bot_api.reply_message(event.reply_token, message)
-
-    except:
+    except Exception as e:
+        print(e)
         line_bot_api.reply_message(
             event.reply_token, TextSendMessage(text='ice no'))
 
@@ -1502,8 +1506,8 @@ def sendback_suger(event, backdata, suger):
 
         message = FlexSendMessage(alt_text="糖度", contents=bubble)
         line_bot_api.reply_message(event.reply_token, message)
-
-    except:
+    except Exception as e:
+        print(e)
         line_bot_api.reply_message(
             event.reply_token, TextSendMessage(text='suger no'))
 
@@ -1622,8 +1626,8 @@ def sendback_add(event, backdata, add):
 
         message = FlexSendMessage(alt_text="加料嗎", contents=bubble)
         line_bot_api.reply_message(event.reply_token, message)
-
-    except:
+    except Exception as e:
+        print(e)
         line_bot_api.reply_message(
             event.reply_token, TextSendMessage(text='不add'))
 
@@ -1655,7 +1659,8 @@ def sendback_num(event, backdata, num):
             ]))
 
         line_bot_api.reply_message(event.reply_token, message)
-    except:
+    except Exception as e:
+        print(e)
         line_bot_api.reply_message(
             event.reply_token, TextSendMessage(text='不買'))
 
@@ -1769,7 +1774,8 @@ def sendback_confirm(event, backdata, result, nn):  # 點完加料
 
         message = FlexSendMessage(alt_text="確認訂單", contents=bubble)
         line_bot_api.reply_message(event.reply_token, message)
-    except:
+    except Exception as e:
+        print(e)
         line_bot_api.reply_message(
             event.reply_token, TextSendMessage(text='不'))
 
@@ -1802,35 +1808,41 @@ def sendButton_Again(event):
             )
         )
         line_bot_api.reply_message(event.reply_token, message)
-    except:
+    except Exception as e:
+        print(e)
         line_bot_api.reply_message(
             event.reply_token, TextSendMessage(text='不'))
 
 
-def sendRECEIPT(event):
+def sendRECEIPT(event, nn):
     try:
         messageA = []
-        orders = Order.objects.order_by('id')
+        uid = nn
+        orders = Order.objects.filter(
+            uid=uid, is_checkout=False).order_by('id')
+
+        if not orders.exists():
+            messageA.append(TextSendMessage(text="目前沒有尚未結帳的訂單。"))
+            line_bot_api.reply_message(event.reply_token, messageA)
+            return
 
         total = 0
+        text1 = ""
+        drinkA = ""
+        iceA = ""
+        sugerA = ""
+        addA = ""
+        priceA = ""
+        amountA = ""
+        tt = ""
 
         for order in orders:
-            text1 = ""
-            drinkA = ""
-            iceA = ""
-            sugerA = ""
-            addA = ""
-            priceA = ""
-            amountA = ""
-
-            tt = ""
-
             drink = order.drink
             ice = order.ice
             suger = order.suger
             add = order.add
             amount = order.amount
-            price = order.price
+            price = int(order.price)
 
             m = int(amount)
 
@@ -1846,179 +1858,182 @@ def sendRECEIPT(event):
             tt += f"\n{drink}：{ice}，{suger}，{add}"
             total += int(price) * int(amount)
 
-            bubble = BubbleContainer(
-                direction='ltr',
-                header=BoxComponent(
-                    layout='vertical',
-                    contents=[
-                        TextComponent(
-                            text="結帳 RECEIPT",
-                            color="#CCAE8F",
-                            size="md",
-                            weight="bold",
-                        ),
-                        TextComponent(
-                            text="啪噠啪噠河馬",
-                            size="35px",
-                            weight="bold",
-                            wrap=True,
-                            margin="md"
-                        ),
-                        TextComponent(
-                            text="河馬調製的茶飲能讓您開心一整天!",
-                            size="xs",
-                            weight="bold",
-                            color="#C8BCC3",
-                        ),
-                        SeparatorComponent(
-                            color="#C8BCC3",
-                            margin="xxl"
-                        ),
-                        BoxComponent(
-                            layout="vertical",
-                            margin="xxl",
-                            spacing="sm",
-                            contents=[
-                                BoxComponent(
-                                    layout="horizontal",
-                                    contents=[
-                                        TextComponent(
-                                            text='飲料',
-                                            color="#4B8F8C",
-                                            flex=4,
-                                            size="sm",
-                                            wrap=True
-                                        ),
-                                        TextComponent(
-                                            text='杯',
-                                            color="#4B8F8C",
-                                            align="end",
-                                            size="sm",
-                                            wrap=True
-                                        ),
-                                        TextComponent(
-                                            text='單價',
-                                            color="#4B8F8C",
-                                            align="end",
-                                            size="sm",
-                                            wrap=True
-                                        ),
-                                    ]
-                                ),
-                                BoxComponent(
-                                    layout="horizontal",
-                                    contents=[
-                                        TextComponent(
-                                            text=drinkA,
-                                            color="#555555",
-                                            flex=4,
-                                            wrap=True
-                                        ),
-                                        TextComponent(
-                                            text=amountA,
-                                            color="#111111",
-                                            align="end",
-                                            wrap=True
-                                        ),
-                                        TextComponent(
-                                            text=priceA,
-                                            color="#C171BD",
-                                            align="end",
-                                            wrap=True
-                                        ),
-                                    ]
-                                )
-                            ]
-                        ),
-                        SeparatorComponent(
-                            color="#C8BCC3",
-                            margin="xxl"
-                        ),
-                        BoxComponent(
-                            layout="vertical",
-                            margin="xxl",
-                            spacing="sm",
-                            contents=[
-                                BoxComponent(
-                                    layout="horizontal",
-                                    contents=[
-                                        TextComponent(
-                                            text='詳細飲料清單',
-                                            color="#4B8F8C",
-                                            size="sm",
-                                            wrap=True
-                                        ),
-                                    ]
-                                ),
-                                BoxComponent(
-                                    layout="horizontal",
-                                    contents=[
-                                        TextComponent(
-                                            text=tt,
-                                            color="#555555",
-                                            flex=0,
-                                            wrap=True
-                                        ),
-                                    ]
-                                )
-                            ]
-                        ),
-                        SeparatorComponent(
-                            color="#C8BCC3",
-                            margin="xxl"
-                        ),
-                        BoxComponent(
-                            layout="vertical",
-                            margin="xxl",
-                            spacing="sm",
-                            contents=[
-                                BoxComponent(
-                                    layout="horizontal",
-                                    contents=[
-                                        TextComponent(
-                                            text="飲料總杯數",
-                                            color="#555555",
-                                            flex=0,
-                                            wrap=True
-                                        ),
-                                        TextComponent(
-                                            text=str(m),
-                                            color="#111111",
-                                            align="end",
-                                            wrap=True
-                                        ),
-                                    ]
-                                ),
-                                BoxComponent(
-                                    layout="horizontal",
-                                    margin="xl",
-                                    contents=[
-                                        TextComponent(
-                                            text="總價",
-                                            color="#C171BD",
-                                            flex=0,
-                                            size="xl",
-                                            wrap=True
-                                        ),
-                                        TextComponent(
-                                            text="$" + str(total),
-                                            color="#C171BD",
-                                            align="end",
-                                            size="xl",
-                                            wrap=True
-                                        ),
-                                    ]
-                                )
-                            ]
-                        ),
-                    ]
-                ),
-            )
+        bubble = BubbleContainer(
+            direction='ltr',
+            header=BoxComponent(
+                layout='vertical',
+                contents=[
+                    TextComponent(
+                        text="結帳 RECEIPT",
+                        color="#CCAE8F",
+                        size="md",
+                        weight="bold",
+                    ),
+                    TextComponent(
+                        text="啪噠啪噠河馬",
+                        size="35px",
+                        weight="bold",
+                        wrap=True,
+                        margin="md"
+                    ),
+                    TextComponent(
+                        text="河馬調製的茶飲能讓您開心一整天!",
+                        size="xs",
+                        weight="bold",
+                        color="#C8BCC3",
+                    ),
+                    SeparatorComponent(
+                        color="#C8BCC3",
+                        margin="xxl"
+                    ),
+                    BoxComponent(
+                        layout="vertical",
+                        margin="xxl",
+                        spacing="sm",
+                        contents=[
+                            BoxComponent(
+                                layout="horizontal",
+                                contents=[
+                                    TextComponent(
+                                        text='飲料',
+                                        color="#4B8F8C",
+                                        flex=4,
+                                        size="sm",
+                                        wrap=True
+                                    ),
+                                    TextComponent(
+                                        text='杯',
+                                        color="#4B8F8C",
+                                        align="end",
+                                        size="sm",
+                                        wrap=True
+                                    ),
+                                    TextComponent(
+                                        text='單價',
+                                        color="#4B8F8C",
+                                        align="end",
+                                        size="sm",
+                                        wrap=True
+                                    ),
+                                ]
+                            ),
+                            BoxComponent(
+                                layout="horizontal",
+                                contents=[
+                                    TextComponent(
+                                        text=drinkA,
+                                        color="#555555",
+                                        flex=4,
+                                        wrap=True
+                                    ),
+                                    TextComponent(
+                                        text=amountA,
+                                        color="#111111",
+                                        align="end",
+                                        wrap=True
+                                    ),
+                                    TextComponent(
+                                        text=priceA,
+                                        color="#C171BD",
+                                        align="end",
+                                        wrap=True
+                                    ),
+                                ]
+                            )
+                        ]
+                    ),
+                    SeparatorComponent(
+                        color="#C8BCC3",
+                        margin="xxl"
+                    ),
+                    BoxComponent(
+                        layout="vertical",
+                        margin="xxl",
+                        spacing="sm",
+                        contents=[
+                            BoxComponent(
+                                layout="horizontal",
+                                contents=[
+                                    TextComponent(
+                                        text='詳細飲料清單',
+                                        color="#4B8F8C",
+                                        size="sm",
+                                        wrap=True
+                                    ),
+                                ]
+                            ),
+                            BoxComponent(
+                                layout="horizontal",
+                                contents=[
+                                    TextComponent(
+                                        text=tt,
+                                        color="#555555",
+                                        flex=0,
+                                        wrap=True
+                                    ),
+                                ]
+                            )
+                        ]
+                    ),
+                    SeparatorComponent(
+                        color="#C8BCC3",
+                        margin="xxl"
+                    ),
+                    BoxComponent(
+                        layout="vertical",
+                        margin="xxl",
+                        spacing="sm",
+                        contents=[
+                            BoxComponent(
+                                layout="horizontal",
+                                contents=[
+                                    TextComponent(
+                                        text="飲料總杯數",
+                                        color="#555555",
+                                        flex=0,
+                                        wrap=True
+                                    ),
+                                    TextComponent(
+                                        text=str(m),
+                                        color="#111111",
+                                        align="end",
+                                        wrap=True
+                                    ),
+                                ]
+                            ),
+                            BoxComponent(
+                                layout="horizontal",
+                                margin="xl",
+                                contents=[
+                                    TextComponent(
+                                        text="總價",
+                                        color="#C171BD",
+                                        flex=0,
+                                        size="xl",
+                                        wrap=True
+                                    ),
+                                    TextComponent(
+                                        text="$" + str(total),
+                                        color="#C171BD",
+                                        align="end",
+                                        size="xl",
+                                        wrap=True
+                                    ),
+                                ]
+                            )
+                        ]
+                    ),
+                ]
+            ),
+        )
 
-            messageA.append(FlexSendMessage(alt_text="結帳", contents=bubble))
+        messageA.append(FlexSendMessage(alt_text="結帳", contents=bubble))
         messageA.append(TextSendMessage(text="我們會盡快幫您準備飲料，請您稍等片刻~"))
+        Order.objects.filter(
+            uid=uid, is_checkout=False).update(is_checkout=True)
         line_bot_api.reply_message(event.reply_token, messageA)
-    except:
+    except Exception as e:
+        print(e)
         line_bot_api.reply_message(
             event.reply_token, TextSendMessage(text='結帳錯誤'))
 
@@ -2094,7 +2109,8 @@ def sendback_which(event, backdata):
 
         message = FlexSendMessage(alt_text="修改哪項訂單", contents=bubble)
         line_bot_api.reply_message(event.reply_token, message)
-    except:
+    except Exception as e:
+        print(e)
         line_bot_api.reply_message(
             event.reply_token, TextSendMessage(text='不'))
 
@@ -2127,8 +2143,8 @@ def sendModifyButton(event, backdata):
             )
         )
         line_bot_api.reply_message(event.reply_token, message)
-
-    except:
+    except Exception as e:
+        print(e)
         line_bot_api.reply_message(
             event.reply_token, TextSendMessage(text='不'))
 
@@ -2373,8 +2389,8 @@ def sendback_Modifyoriginal(event, backdata):
         )
 
         line_bot_api.reply_message(event.reply_token, flex_message)
-
-    except:
+    except Exception as e:
+        print(e)
         line_bot_api.reply_message(
             event.reply_token, TextSendMessage(text='修改啪噠原茶失敗'))
 
@@ -2608,7 +2624,686 @@ def sendback_Modifypure(event, backdata):
         )
 
         line_bot_api.reply_message(event.reply_token, flex_message)
-
-    except:
+    except Exception as e:
+        print(e)
         line_bot_api.reply_message(
             event.reply_token, TextSendMessage(text='不'))
+
+
+def sendback_Modifymilktea(event, backdata):
+    try:
+        flex_message = FlexSendMessage(
+            alt_text='啪噠奶茶',
+            contents={
+                "type": "carousel",
+                "contents": [
+                    {
+                        'type': 'bubble',
+                        'direction': 'ltr',
+                        "header": {
+                            "type": "box",
+                            "layout": "vertical",
+                            "contents": [
+                                {
+                                    "type": "text",
+                                    "text": "啪噠奶茶",
+                                    "weight": "bold",
+                                    "margin": "sm",
+                                    "size": "md",
+                                    "wrap": True
+                                }
+                            ]
+                        },
+                        'hero': {
+                            'type': 'image',
+                            'url': 'https://raw.githubusercontent.com/shakuneko/pic0412/main/%E9%A3%B2%E6%96%99/%E5%95%AA%E5%99%A0%E7%B4%85%E8%8C%B6.JPG',
+                            'size': 'full',
+                            'aspectRatio': '1:1',
+                            'aspectMode': 'cover',
+
+                        },
+                        'body': {
+                            "type": "box",
+                            "layout": "vertical",
+                            "spacing": "sm",
+                            "contents": [
+                                {
+                                    "type": "button",
+                                    "style": "secondary",
+                                    "color": "#F6DCCB",
+                                    "action": {
+                                        'type': 'postback',
+                                        'label': 'M 啪噠奶茶',
+                                        'text': '改成 M 啪噠奶茶',
+                                        'data': 'do'
+                                    }
+                                },
+                                {
+                                    "type": "button",
+                                    "style": "secondary",
+                                    "color": "#C4DABB",
+                                    "action": {
+                                        'type': 'postback',
+                                        'label': 'L 啪噠奶茶',
+                                        'text': '改成 L 啪噠奶茶',
+                                        'data': 'do'
+                                    }
+                                },
+                            ]
+                        }
+                    },
+                    {
+                        'type': 'bubble',
+                        'direction': 'ltr',
+                        "header": {
+                            "type": "box",
+                            "layout": "vertical",
+                            "contents": [
+                                {
+                                    "type": "text",
+                                    "text": "茉香奶綠",
+                                    "weight": "bold",
+                                    "margin": "sm",
+                                    "size": "md",
+                                    "wrap": True
+                                }
+                            ]
+                        },
+                        'hero': {
+                            'type': 'image',
+                            'url': 'https://raw.githubusercontent.com/shakuneko/pic0412/main/%E9%A3%B2%E6%96%99/%E5%9B%9B%E5%AD%A3%E7%83%8F%E9%BE%8D.JPG',
+                            'size': 'full',
+                            'aspectRatio': '1:1',
+                            'aspectMode': 'cover',
+                        },
+                        'body': {
+                            "type": "box",
+                            "layout": "vertical",
+                            "spacing": "sm",
+                            "contents": [
+                                {
+                                    "type": "button",
+                                    "style": "secondary",
+                                    "color": "#F6DCCB",
+                                    "action": {
+                                        'type': 'postback',
+                                        'label': 'M 茉香奶綠',
+                                        'text': '改成 M 茉香奶綠',
+                                        'data': 'do'
+                                    }
+                                },
+                                {
+                                    "type": "button",
+                                    "style": "secondary",
+                                    "color": "#C4DABB",
+                                    "action": {
+                                        'type': 'postback',
+                                        'label': 'L 茉香奶綠',
+                                        'text': '改成 L 茉香奶綠',
+                                        'data': 'do'
+                                    }
+                                },
+                            ]
+                        }
+                    },
+                    {
+                        'type': 'bubble',
+                        'direction': 'ltr',
+                        "header": {
+                            "type": "box",
+                            "layout": "vertical",
+                            "contents": [
+                                {
+                                    "type": "text",
+                                    "text": "鐵觀音奶茶",
+                                    "weight": "bold",
+                                    "margin": "sm",
+                                    "size": "md",
+                                    "wrap": True
+                                }
+                            ]
+                        },
+                        'hero': {
+                            'type': 'image',
+                            'url': 'https://raw.githubusercontent.com/shakuneko/pic0412/main/%E9%A3%B2%E6%96%99/%E5%95%AA%E5%99%A0%E6%99%AE%E6%B4%B1%E8%8C%B6.JPG',
+                            'size': 'full',
+                            'aspectRatio': '1:1',
+                            'aspectMode': 'cover',
+                        },
+                        'body': {
+                            "type": "box",
+                            "layout": "vertical",
+                            "spacing": "sm",
+                            "contents": [
+                                {
+                                    "type": "button",
+                                    "style": "secondary",
+                                    "color": "#F6DCCB",
+                                    "action": {
+                                        'type': 'postback',
+                                        'label': 'M 鐵觀音奶茶',
+                                        'text': '改成 M 鐵觀音奶茶',
+                                        'data': 'do'
+                                    }
+                                },
+                                {
+                                    "type": "button",
+                                    "style": "secondary",
+                                    "color": "#C4DABB",
+                                    "action": {
+                                        'type': 'postback',
+                                        'label': 'L 鐵觀音奶茶',
+                                        'text': '改成 L 鐵觀音奶茶',
+                                        'data': 'do'
+                                    }
+                                },
+                            ]
+                        }
+                    },
+                    {
+                        'type': 'bubble',
+                        'direction': 'ltr',
+                        "header": {
+                            "type": "box",
+                            "layout": "vertical",
+                            "contents": [
+                                {
+                                    "type": "text",
+                                    "text": "香芋奶綠",
+                                    "weight": "bold",
+                                    "margin": "sm",
+                                    "size": "md",
+                                    "wrap": True
+                                }
+                            ]
+                        },
+                        'hero': {
+                            'type': 'image',
+                            'url': 'https://raw.githubusercontent.com/shakuneko/pic0412/main/%E9%A3%B2%E6%96%99/%E5%95%AA%E5%99%A0%E7%84%99%E8%8C%B6.JPG',
+                            'size': 'full',
+                            'aspectRatio': '1:1',
+                            'aspectMode': 'cover',
+                        },
+                        'body': {
+                            "type": "box",
+                            "layout": "vertical",
+                            "spacing": "sm",
+                            "contents": [
+                                {
+                                    "type": "button",
+                                    "style": "secondary",
+                                    "color": "#F6DCCB",
+                                    "action": {
+                                        'type': 'postback',
+                                        'label': 'M 香芋奶綠',
+                                        'text': '改成 M 香芋奶綠',
+                                        'data': 'do'
+                                    }
+                                },
+                                {
+                                    "type": "button",
+                                    "style": "secondary",
+                                    "color": "#C4DABB",
+                                    "action": {
+                                        'type': 'postback',
+                                        'label': 'L 香芋奶綠',
+                                        'text': '改成 L 香芋奶綠',
+                                        'data': 'do'
+                                    }
+                                },
+                            ]
+                        }
+                    },
+                ]
+            }
+        )
+
+        line_bot_api.reply_message(event.reply_token, flex_message)
+    except Exception as e:
+        print(e)
+        line_bot_api.reply_message(
+            event.reply_token, TextSendMessage(text='不'))
+
+
+def sendback_modifyConfirm(event, stuff, nn):  # 點完加料
+    try:
+        uid = nn
+        p = Order.objects.filter(
+            uid=uid, is_checkout=False).order_by('id').last()
+        stuff = stuff.replace(" ", "")
+
+        if stuff in menu:
+            p.drink = stuff
+            p.price = menu[stuff]
+            p.save()
+            whichOne = "飲料品項"
+        elif stuff in iceMenu:
+            p.ice = stuff
+            p.save()
+            whichOne = "冰塊"
+        elif stuff in sugerMenu:
+            p.suger = stuff
+            p.save()
+            whichOne = "糖度"
+        elif stuff[:1] in amountMenu:
+            stuff = stuff[:1]
+            p.amount = stuff
+            p.save()
+            whichOne = "數量"
+        elif stuff in addMenu:
+            p.add = stuff
+            p.save()
+            whichOne = "加料"
+
+        drink = p.drink
+        ice = p.ice
+        suger = p.suger
+        add = p.add
+        amount = p.amount
+
+        if add == "不用加料":  # 判斷價格
+            p.price = menu[drink]
+            p.save()
+        else:
+            p.price = menu_e[drink]
+            p.save()
+        price = p.price
+
+        bubble = BubbleContainer(
+            direction='ltr',
+            header=BoxComponent(
+                layout='vertical',
+                background_color='#DBD3D8',
+                contents=[
+                    TextComponent(
+                        text="確認修改訂單",
+                        size="md",
+                        weight="bold",
+                    ),
+                ]
+            ),
+            body=BoxComponent(
+                layout='vertical',
+                contents=[
+                    TextComponent(
+                        text="\n修改 " + whichOne + " 為： " + stuff,
+                        weight="bold",
+                        wrap=True
+                    ),
+                    TextComponent(
+                        text="\n"
+                    ),
+                    TextComponent(
+                        text="\n修改後訂單全貌："
+                    ),
+                    TextComponent(
+                        text="\n飲料品項：" + drink
+                    ),
+                    TextComponent(
+                        text="\n數量：" + str(amount)
+                    ),
+                    TextComponent(
+                        text="\n冰塊：" + ice
+                    ),
+                    TextComponent(
+                        text="\n糖度：" + suger
+                    ),
+                    TextComponent(
+                        text="\n加料：" + add
+                    ),
+                    TextComponent(
+                        text=" 加料 + 10 元喔!",
+                        color="#C8BCC3",
+                        size="xs",
+                        margin='xs'
+                    ),
+                    TextComponent(
+                        text="\n一杯單價：" + str(price)
+                    ),
+                    TextComponent(
+                        text="\n"
+                    ),
+                    TextComponent(
+                        text="\n請問要結束購買嗎",
+                        weight="bold",
+                    ),
+                ]
+            ),
+            footer=BoxComponent(
+                layout='vertical',
+                spacing='xs',
+                contents=[
+                    BoxComponent(
+                        layout='horizontal',
+                        spacing='xs',
+                        contents=[
+                            ButtonComponent(
+                                style='secondary',
+                                color="#E8F1E4",
+                                action=PostbackTemplateAction(
+                                    label='修改此筆訂單',
+                                    text='修改此筆訂單',
+                                    data='H'
+                                )
+                            ),
+                            ButtonComponent(
+                                style='secondary',
+                                color="#C4DABB",
+                                action=PostbackTemplateAction(
+                                    label='繼續購物',
+                                    text='繼續購物',
+                                    data='G'
+                                )
+                            )
+                        ]
+                    ),
+                    ButtonComponent(
+                        style='secondary',
+                        color="#F6DCCB",
+                        action=PostbackTemplateAction(
+                            label='結帳',
+                            text='結帳',
+                            data='F'
+                        )
+                    )
+                ]
+            )
+        )
+
+        message = FlexSendMessage(alt_text="修改後訂單", contents=bubble)
+        line_bot_api.reply_message(event.reply_token, message)
+    except Exception as e:
+        print(e)
+        line_bot_api.reply_message(
+            event.reply_token, TextSendMessage(text='修改失敗'))
+
+
+def sendback_Modifyadd(event, backdata):
+    try:
+        bubble = BubbleContainer(
+            direction='ltr',
+            header=BoxComponent(
+                layout='vertical',
+                background_color='#DBD3D8',
+                contents=[
+                    TextComponent(
+                        text="加料 +10，只能選一種!",
+                        size="md",
+                        weight="bold",
+                        margin="sm"
+                    )
+                ]
+            ),
+            body=BoxComponent(
+                layout='vertical',
+                margin="sm",
+                contents=[
+                    BoxComponent(
+                        layout='horizontal',
+                        spacing='xs',
+                        contents=[
+                            ImageComponent(
+                                url="https://raw.githubusercontent.com/shakuneko/pic0412/main/%E9%85%8D%E6%96%99/%E9%BB%91%E7%B3%96%E7%8F%8D%E7%8F%A0.JPG",
+                                size="lg",
+                                aspect_mode="cover",
+                                action=PostbackTemplateAction(
+                                    label='黑糖珍珠',
+                                    text='改成 黑糖珍珠',
+                                    data='aa'
+                                )
+                            ),
+                            ImageComponent(
+                                url="https://raw.githubusercontent.com/shakuneko/pic0412/main/%E9%85%8D%E6%96%99/%E6%A4%B0%E6%9E%9C.JPG",
+                                size="lg",
+                                aspect_mode="cover",
+                                action=PostbackTemplateAction(
+                                    label='椰果',
+                                    text='改成 椰果',
+                                    data='aa'
+                                )
+                            ),
+                            ImageComponent(
+                                url="https://raw.githubusercontent.com/shakuneko/pic0412/main/%E9%85%8D%E6%96%99/%E5%B0%8F%E8%8A%8B%E5%9C%93.JPG",
+                                size="lg",
+                                aspect_mode="cover",
+                                action=PostbackTemplateAction(
+                                    label='小芋圓',
+                                    text='改成 小芋圓',
+                                    data='aa'
+                                )
+                            ),
+                        ]
+                    ),
+                    BoxComponent(
+                        layout='horizontal',
+                        spacing='xs',
+                        contents=[
+                            ImageComponent(
+                                url="https://raw.githubusercontent.com/shakuneko/pic0412/main/%E9%85%8D%E6%96%99/%E8%9C%82%E8%9C%9C%E7%99%BD%E7%8E%89.JPG",
+                                size="lg",
+                                aspect_mode="cover",
+                                action=PostbackTemplateAction(
+                                    label='蜂蜜白玉',
+                                    text='改成 蜂蜜白玉',
+                                    data='aa'
+                                )
+                            ),
+                            ImageComponent(
+                                url="https://raw.githubusercontent.com/shakuneko/pic0412/main/%E9%85%8D%E6%96%99/%E4%BB%99%E8%8D%89.JPG",
+                                size="lg",
+                                aspect_mode="cover",
+                                action=PostbackTemplateAction(
+                                    label='仙草',
+                                    text='改成 仙草',
+                                    data='aa'
+                                )
+                            ),
+                            ImageComponent(
+                                url="https://raw.githubusercontent.com/shakuneko/pic0412/main/%E9%85%8D%E6%96%99/%E5%B8%83%E4%B8%81.JPG",
+                                size="lg",
+                                aspect_mode="cover",
+                                action=PostbackTemplateAction(
+                                    label='布丁',
+                                    text='改成 布丁',
+                                    data='aa'
+                                )
+                            ),
+                        ]
+                    ),
+                ]
+            ),
+            footer=BoxComponent(
+                layout='horizontal',
+                spacing='xs',
+                contents=[
+                    ButtonComponent(
+                        style='secondary',
+                        color="#C4DABB",
+                        action=PostbackTemplateAction(
+                            label='不用加料',
+                            text='改成 不用加料',
+                            data='aa'
+                        )
+                    )
+                ]
+            )
+        )
+
+        message = FlexSendMessage(alt_text="修改加料", contents=bubble)
+        line_bot_api.reply_message(event.reply_token, message)
+    except Exception as e:
+        print(e)
+        line_bot_api.reply_message(
+            event.reply_token, TextSendMessage(text='無法修改加料'))
+
+
+def sendback_Modifynum(event, backdata):
+    try:
+        message = TextSendMessage(
+            text='請問要改成幾份',
+            quick_reply=QuickReply(items=[
+                QuickReplyButton(action=PostbackTemplateAction(
+                    label="1", text="改成 1份", data='bb')),
+                QuickReplyButton(action=PostbackTemplateAction(
+                    label="2", text="改成 2份", data='bb')),
+                QuickReplyButton(action=PostbackTemplateAction(
+                    label="3", text="改成 3份", data='bb')),
+                QuickReplyButton(action=PostbackTemplateAction(
+                    label="4", text="改成 4份", data='bb')),
+                QuickReplyButton(action=PostbackTemplateAction(
+                    label="5", text="改成 5份", data='bb')),
+                QuickReplyButton(action=PostbackTemplateAction(
+                    label="6", text="改成 6份", data='bb')),
+                QuickReplyButton(action=PostbackTemplateAction(
+                    label="7", text="改成 7份", data='bb')),
+                QuickReplyButton(action=PostbackTemplateAction(
+                    label="8", text="改成 8份", data='bb')),
+                QuickReplyButton(action=PostbackTemplateAction(
+                    label="9", text="改成 9份", data='bb')),
+            ]))
+
+        line_bot_api.reply_message(event.reply_token, message)
+    except Exception as e:
+        print(e)
+        line_bot_api.reply_message(
+            event.reply_token, TextSendMessage(text='不買'))
+
+
+def sendback_Modifysuger(event, backdata):
+    try:
+        bubble = BubbleContainer(
+            direction='ltr',
+            body=BoxComponent(
+                layout='horizontal',
+                spacing='xs',
+                contents=[
+                    ImageComponent(
+                        url="https://raw.githubusercontent.com/shakuneko/pic0412/main/%E5%86%B0%E5%A1%8A%E7%94%9C%E5%BA%A6/%E7%84%A1%E7%B3%96-03.jpg",
+                        size="lg",
+                        aspect_mode="cover",
+                        action=PostbackTemplateAction(
+                            label='無糖',
+                            text='改成 無糖',
+                            data='cc'
+                        )
+                    ),
+                    ImageComponent(
+                        url="https://raw.githubusercontent.com/shakuneko/pic0412/main/%E5%86%B0%E5%A1%8A%E7%94%9C%E5%BA%A6/%E5%BE%AE%E7%B3%96-03.jpg",
+                        size="lg",
+                        aspect_mode="cover",
+                        action=PostbackTemplateAction(
+                            label='微糖',
+                            text='改成 微糖',
+                            data='cc'
+                        )
+                    ),
+                    ImageComponent(
+                        url="https://raw.githubusercontent.com/shakuneko/pic0412/main/%E5%86%B0%E5%A1%8A%E7%94%9C%E5%BA%A6/%E5%8D%8A%E7%B3%96-03.jpg",
+                        size="lg",
+                        aspect_mode="cover",
+                        action=PostbackTemplateAction(
+                            label='半糖',
+                            text='改成 半糖',
+                            data='cc'
+                        )
+                    ),
+                    ImageComponent(
+                        url="https://raw.githubusercontent.com/shakuneko/pic0412/main/%E5%86%B0%E5%A1%8A%E7%94%9C%E5%BA%A6/%E5%B0%91%E7%B3%96-03.jpg",
+                        size="lg",
+                        aspect_mode="cover",
+                        action=PostbackTemplateAction(
+                            label='少糖',
+                            text='改成 少糖',
+                            data='cc'
+                        )
+                    ),
+                    ImageComponent(
+                        url="https://raw.githubusercontent.com/shakuneko/pic0412/main/%E5%86%B0%E5%A1%8A%E7%94%9C%E5%BA%A6/%E5%85%A8%E7%B3%96-03.jpg",
+                        size="lg",
+                        aspect_mode="cover",
+                        action=PostbackTemplateAction(
+                            label='全糖',
+                            text='改成 全糖',
+                            data='cc'
+                        )
+                    ),
+                ]
+            )
+        )
+
+        message = FlexSendMessage(alt_text="修改糖度", contents=bubble)
+        line_bot_api.reply_message(event.reply_token, message)
+    except Exception as e:
+        print(e)
+        line_bot_api.reply_message(
+            event.reply_token, TextSendMessage(text='無法修改糖度'))
+
+
+def sendback_Modifyice(event, backdata):
+    try:
+        bubble = BubbleContainer(
+            direction='ltr',
+            body=BoxComponent(
+                layout='horizontal',
+                spacing='xs',
+                contents=[
+                    ImageComponent(
+                        url="https://raw.githubusercontent.com/shakuneko/pic0412/main/%E5%86%B0%E5%A1%8A%E7%94%9C%E5%BA%A6/%E5%B8%B8%E6%BA%AB-03.jpg",
+                        size="lg",
+                        aspect_mode="cover",
+                        action=PostbackTemplateAction(
+                            label='常溫',
+                            text='改成 常溫',
+                            data='dd'
+                        )
+                    ),
+                    ImageComponent(
+                        url="https://raw.githubusercontent.com/shakuneko/pic0412/main/%E5%86%B0%E5%A1%8A%E7%94%9C%E5%BA%A6/%E5%8E%BB%E5%86%B0-03.jpg",
+                        size="lg",
+                        aspect_mode="cover",
+                        action=PostbackTemplateAction(
+                            label='去冰',
+                            text='改成 去冰',
+                            data='dd'
+                        )
+                    ),
+                    ImageComponent(
+                        url="https://raw.githubusercontent.com/shakuneko/pic0412/main/%E5%86%B0%E5%A1%8A%E7%94%9C%E5%BA%A6/%E5%BE%AE%E5%86%B0-03.jpg",
+                        size="lg",
+                        aspect_mode="cover",
+                        action=PostbackTemplateAction(
+                            label='微冰',
+                            text='改成 微冰',
+                            data='dd'
+                        )
+                    ),
+                    ImageComponent(
+                        url="https://raw.githubusercontent.com/shakuneko/pic0412/main/%E5%86%B0%E5%A1%8A%E7%94%9C%E5%BA%A6/%E5%B0%91%E5%86%B0-03.jpg",
+                        size="lg",
+                        aspect_mode="cover",
+                        action=PostbackTemplateAction(
+                            label='少冰',
+                            text='改成 少冰',
+                            data='dd'
+                        )
+                    ),
+                    ImageComponent(
+                        url="https://raw.githubusercontent.com/shakuneko/pic0412/main/%E5%86%B0%E5%A1%8A%E7%94%9C%E5%BA%A6/%E6%AD%A3%E5%B8%B8-03.jpg",
+                        size="lg",
+                        aspect_mode="cover",
+                        action=PostbackTemplateAction(
+                            label='正常',
+                            text='改成 正常',
+                            data='dd'
+                        )
+                    ),
+                ]
+            )
+        )
+
+        message = FlexSendMessage(alt_text="修改冰塊", contents=bubble)
+        line_bot_api.reply_message(event.reply_token, message)
+    except Exception as e:
+        print(e)
+        line_bot_api.reply_message(
+            event.reply_token, TextSendMessage(text='無法修改冰塊'))

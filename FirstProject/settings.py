@@ -28,7 +28,8 @@ LINE_CHANNEL_SECRET = "317d27674e5e4dd2e48a7ae68136562f"
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['02cb-27-242-2-193.ngrok-free.app', '127.0.0.1']
+ALLOWED_HOSTS = ['02cb-27-242-2-193.ngrok-free.app', '127.0.0.1',
+                 'dd13-2401-e180-8832-4a8a-509f-5133-58b9-8b75.ngrok-free.app']
 
 
 # Application definition

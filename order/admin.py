@@ -6,7 +6,7 @@ from order.models import Order
 
 class OrderAdmin(admin.ModelAdmin):
     list_display = ('id', 'drink', 'ice', 'suger',
-                    'add', 'price', 'amount', 'uid')
+                    'add', 'price', 'amount', 'uid', 'is_checkout')
 
 
 admin.site.register(Order, OrderAdmin)

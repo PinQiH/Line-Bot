@@ -13,6 +13,7 @@ class Order(models.Model):
     price = models.DecimalField(max_digits=10, decimal_places=2)
     amount = models.IntegerField()
     uid = models.CharField(max_length=50)
+    is_checkout = models.BooleanField(default=False)
 
     def __str__(self):
         return f"{self.id}"
